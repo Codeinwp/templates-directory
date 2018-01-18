@@ -22,7 +22,7 @@ class PageTemplatesDirectory {
 	 * @access  protected
 	 * @var     string $slug The module slug.
 	 */
-	protected $slug = 'page-templates-directory';
+	protected $slug = 'templates-directory';
 
 	protected $source_url;
 
