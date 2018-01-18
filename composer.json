@@ -1,0 +1,22 @@
+{
+  "name": "codeinwp/templates-directory",
+  "description": "A WordPress library to manage page templates.",
+  "type": "library",
+  "license": "GPL-2.0+",
+  "homepage": "https://github.com/Codeinwp/templates-directory",
+  "authors": [
+    {
+      "name": "ThemeIsle team",
+      "email": "friends@themeisle.com",
+      "homepage": "https://themeisle.com"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "load.php"
+    ]
+  },
+  "support": {
+    "issues": "https://github.com/Codeinwp/templates-directory/issues"
+  }
+}
