@@ -1,0 +1,39 @@
+[
+    {
+        "name": "codeinwp/full-width-page-templates",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Codeinwp/full-width-page-templates.git",
+            "reference": "aa5d8e96e2b65aef9816f747bfc05c37bd37292c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Codeinwp/full-width-page-templates/zipball/aa5d8e96e2b65aef9816f747bfc05c37bd37292c",
+            "reference": "aa5d8e96e2b65aef9816f747bfc05c37bd37292c",
+            "shasum": ""
+        },
+        "time": "2018-01-17T13:44:31+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "load.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "ThemeIsle team",
+                "email": "friends@themeisle.com",
+                "homepage": "https://themeisle.com"
+            }
+        ],
+        "description": "A WordPress library to create full width page templates.",
+        "homepage": "https://github.com/Codeinwp/full-width-page-templates"
+    }
+]
