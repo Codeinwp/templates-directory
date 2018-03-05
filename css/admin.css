@@ -335,3 +335,7 @@
 		margin-right: 0;
 	}
 }
+/* Mega z-index hack for ant-modal*/
+div.ant-modal-wrap {
+	z-index: 500001;
+}

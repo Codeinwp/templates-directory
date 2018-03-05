@@ -42,11 +42,16 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_template_dir_scripts' ) );
 			// Get the full-width pages feature
 			add_action( 'init', array( $this, 'load_full_width_page_templates' ), 11 );
+
 			// Remove the blank template from the page template selector
 			add_filter( 'fwpt_templates_list', array( $this, 'filter_fwpt_templates_list' ) );
 
+			add_filter( 'template_directory_templates_list', array( $this, 'add_templates_from_theme_support' ), 10, 2 );
+
 			$default_source_url = apply_filters( 'templates_directory_source_url', 'https://raw.githubusercontent.com/Codeinwp/obfx-templates/master/' );
 			$this->set_source_url( $default_source_url );
+
+			$this->init_demo_data_importer();
 		}
 
 		/**
@@ -55,7 +60,12 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		public function enqueue_template_dir_scripts() {
 			$current_screen = get_current_screen();
 
-			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' || $current_screen->id === 'pages_page_obfx_template_dir' ) {
+			if (
+				$current_screen->id === 'orbit-fox_page_obfx_template_dir'
+				|| $current_screen->id === 'orbit-fox_page_obfx_template_demos_dir'
+				|| $current_screen->id === 'pages_page_obfx_template_dir'
+				|| $current_screen->id === 'pages_page_obfx_template_demos_dir'
+			) {
 				$script_handle = $this->slug . '-script';
 				wp_enqueue_script( 'plugin-install' );
 				wp_enqueue_script( 'updates' );
@@ -63,11 +73,19 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 				wp_localize_script( $script_handle, 'importer_endpoint',
 					array(
 						'url'   => $this->get_endpoint_url( '/import_elementor' ),
-						'nonce' => wp_create_nonce( 'wp_rest' ),
+						'nonce' => wp_create_nonce( 'demodata_wp_rest' ),
 					) );
 				wp_enqueue_script( $script_handle );
 
 				wp_enqueue_style( $this->slug . '-style', plugin_dir_url( $this->get_dir() ) . $this->slug . '/css/admin.css', array(), $this::$version );
+
+				wp_enqueue_script(
+					$this->slug . '-importer',
+					plugin_dir_url( $this->get_dir() ) . $this->slug . '/js/importer.js',
+					array( 'wp-api' ),
+					$this::$version,
+					true
+				);
 			}
 		}
 
@@ -97,8 +115,8 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 *
 		 * @return array
 		 */
-		public function templates_list() {
-			$defaults_if_empty  = array(
+		public function templates_list( $type = false ) {
+			$defaults_if_empty = array(
 				'title'            => __( 'A new Orbit Fox Template', 'textdomain' ),
 				'screenshot'       => esc_url( 'https://raw.githubusercontent.com/Codeinwp/obfx-templates/master/placeholder.png' ),
 				'description'      => __( 'This is an awesome Orbit Fox Template.', 'textdomain' ),
@@ -184,7 +202,43 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 				$templates_list[ $template ] = wp_parse_args( $properties, $defaults_if_empty );
 			}
 
-			return apply_filters( 'template_directory_templates_list', $templates_list );
+			return apply_filters( 'template_directory_templates_list', $templates_list, $type );
+		}
+
+		/**
+		 * Initialize the demo importer class
+		 */
+		public function init_demo_data_importer(){
+			require_once ( $this->get_dir() . '/inc/class-demo-data-importer.php' );
+			\ThemeIsle\PageTemplatesDirectory\DemoDataImporter::instance();
+		}
+
+		/**
+		 * Add demo data entries to the templates list
+		 * @param $templates
+		 * @param $type
+		 *
+		 * @return mixed
+		 */
+		public function add_templates_from_theme_support( $templates, $type ) {
+			if ( $type === 'demo' ) {
+				$templates = array();
+
+				$demodata = get_theme_support( 'demo-data' );
+
+				if ( empty( $demodata ) || empty( $demodata[0] ) ) {
+					return $templates;
+				}
+
+				$demodata = $demodata[0];
+
+				foreach ( $demodata as $demo => $args ) {
+					$templates[ $demo ]         = $args;
+					$templates[ $demo ]['type'] = 'demo';
+				}
+			}
+
+			return $templates;
 		}
 
 		/**
@@ -220,17 +274,31 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function add_menu_page() {
 			add_submenu_page(
-				'edit.php?post_type=page', __( 'Orbit Fox Template Directory', 'textdomain' ), __( 'Template Directory', 'textdomain' ), 'manage_options', 'obfx_template_dir',
-				array( $this, 'render_admin_page' )
+				'edit.php?post_type=page', __( 'Orbit Fox Template Directory', 'textdomain' ), __( 'Page Templates', 'textdomain' ), 'manage_options', 'obfx_template_dir',
+				array( $this, 'render_admin_page_templates' )
 			);
+
+			if ( current_theme_supports( 'demo-data' ) ) {
+				add_submenu_page(
+					'edit.php?post_type=page', __( 'Orbit Fox Template Directory', 'textdomain' ), __( 'Demos Import', 'textdomain' ), 'manage_options', 'obfx_template_demos_dir',
+					array( $this, 'render_admin_site_demos' )
+				);
+			}
 		}
 
 		/**
 		 * Render the template directory admin page.
 		 */
-		public function render_admin_page() {
+		public function render_admin_page_templates() {
 			$data = array(
 				'templates_array' => $this->templates_list(),
+			);
+			echo $this->render_view( 'template-directory-page', $data );
+		}
+
+		public function render_admin_site_demos() {
+			$data = array(
+				'templates_array' => $this->templates_list( 'demo'),
 			);
 			echo $this->render_view( 'template-directory-page', $data );
 		}
@@ -366,12 +434,13 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * Getter method for the source url
 		 * @return mixed
 		 */
-		public function get_source_url(){
+		public function get_source_url() {
 			return $this->source_url;
 		}
 
 		/**
 		 * Setting method for source url
+		 *
 		 * @param $url
 		 */
 		protected function set_source_url( $url ) {
@@ -429,8 +498,10 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 *
 		 * @since   1.0.0
 		 * @access  protected
+		 *
 		 * @param   string $view_name The view name w/o the `-tpl.php` part.
-		 * @param   array  $args An array of arguments to be passed to the view.
+		 * @param   array $args An array of arguments to be passed to the view.
+		 *
 		 * @return string
 		 */
 		protected function render_view( $view_name, $args = array() ) {
@@ -444,6 +515,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			if ( file_exists( $file ) ) {
 				include $file;
 			}
+
 			return ob_get_clean();
 		}
 
