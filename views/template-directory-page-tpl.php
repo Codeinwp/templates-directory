@@ -9,7 +9,6 @@
  * @subpackage ThemeIsle/PageTemplatesDirectory
  * @codeCoverageIgnore
  */
-
 $preview_url = add_query_arg( 'obfx_templates', '', home_url() ); // Define query arg for custom endpoint.
 
 $html = '';
@@ -22,14 +21,14 @@ if ( is_array( $templates_array ) ) { ?>
 			<?php foreach ( $templates_array as $template => $properties ) { ?>
 				<div class="obfx-template">
 					<div class="more-details obfx-preview-template"
-					     data-demo-url="<?php echo esc_url( $properties['demo_url'] ) ?>"
-					     data-template-slug="<?php echo esc_attr( $template ) ?>"
-					     data-isdemodata="<?php echo $properties['type'] === 'demo' ? 'true': 'false' ?>">
+						 data-demo-url="<?php echo esc_url( $properties['demo_url'] ) ?>"
+						 data-template-slug="<?php echo esc_attr( $template ) ?>"
+						 data-isdemodata="<?php echo $properties['type'] === 'demo' ? 'true': 'false' ?>">
 						<span><?php esc_html_e( 'More Details', 'textdomain' ) ?></span>
 					</div>
 					<div class="obfx-template-screenshot">
 						<img src="<?php echo esc_url( $properties['screenshot'] ) ?>"
-						     alt="<?php esc_html_e( $properties['title'] ) ?>">
+							 alt="<?php esc_html_e( $properties['title'] ) ?>">
 					</div>
 					<h2 class="template-name template-header"><?php esc_html_e( $properties['title'] ) ?></h2>
 					<div class="obfx-template-actions">
@@ -63,18 +62,18 @@ if ( is_array( $templates_array ) ) { ?>
 			foreach ( $templates_array as $template => $properties ) {
 				if ( $properties['type'] === 'demo' ) { ?>
 					<div class="install-theme-info obfx-theme-info <?php echo esc_attr( $template ); ?>"
-					     data-demo-url="<?php echo esc_url( $properties['demo_url'] ); ?>"
-					     data-template-file="<?php echo esc_url( $properties['import_file'] ); ?>"
-					     data-template-title="<?php echo esc_html( $properties['title'] ); ?>"
-					     data-isDemoData="true">
+						 data-demo-url="<?php echo esc_url( $properties['demo_url'] ); ?>"
+						 data-template-file="<?php echo esc_url( $properties['import_file'] ); ?>"
+						 data-template-title="<?php echo esc_html( $properties['title'] ); ?>"
+						 data-isDemoData="true">
 						<div id="demoDataImporter"></div>
 					</div>
 				<?php } else { ?>
 					<div class="install-theme-info obfx-theme-info <?php echo esc_attr( $template ); ?>"
-					     data-demo-url="<?php echo esc_url( $properties['demo_url'] ); ?>"
-					     data-template-file="<?php echo esc_url( $properties['import_file'] ); ?>"
-					     data-template-title="<?php echo esc_html( $properties['title'] ); ?>"
-					     data-isDemoData="false">
+						 data-demo-url="<?php echo esc_url( $properties['demo_url'] ); ?>"
+						 data-template-file="<?php echo esc_url( $properties['import_file'] ); ?>"
+						 data-template-title="<?php echo esc_html( $properties['title'] ); ?>"
+						 data-isDemoData="false">
 						<h3 class="theme-name"><?php echo esc_html( $properties['title'] ); ?></h3>
 						<img class="theme-screenshot" src="<?php echo esc_url( $properties['screenshot'] ); ?>" alt="<?php echo esc_html( $properties['title'] ); ?>">
 						<div class="theme-details">

@@ -165,7 +165,7 @@ var obfx_template_directory = function ($) {
 			var templateSlug = $(this).data('template-slug');
 			var previewUrl = $(this).data('demo-url');
 			var isDemoData = $(this).data('isdemodata');
-			// $('.obfx-template-frame').attr('src', previewUrl);
+			$('.obfx-template-frame').attr('src', previewUrl);
 			$('.obfx-theme-info.' + templateSlug).addClass('active');
 			setupImportButton();
 			$('.obfx-template-preview').fadeIn();

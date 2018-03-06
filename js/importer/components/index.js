@@ -9,14 +9,16 @@ import reducers from '../reducers/index';
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 const store = createStoreWithMiddleware(reducers);
 
-import App from './app'
+import App from './app';
 
-$(document).on('initDemoImporter', function (event,data) {
+(function ($) {
+    $(document).on('initDemoImporter', function (event,data) {
 
-	ReactDOM.render(
-		<Provider store={store}>
-			<App {...data}/>
-		</Provider>,
-		document.getElementById('demoDataImporter')
-	);
-});
+        ReactDOM.render(
+            <Provider store={store}>
+                <App {...data}/>
+            </Provider>,
+            document.getElementById('demoDataImporter')
+        );
+    });
+})(jQuery);

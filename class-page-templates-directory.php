@@ -292,6 +292,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		public function render_admin_page_templates() {
 			$data = array(
 				'templates_array' => $this->templates_list(),
+				'current_page'    => 'templates_import'
 			);
 			echo $this->render_view( 'template-directory-page', $data );
 		}
@@ -299,6 +300,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		public function render_admin_site_demos() {
 			$data = array(
 				'templates_array' => $this->templates_list( 'demo'),
+				'current_page'    => 'demos_import'
 			);
 			echo $this->render_view( 'template-directory-page', $data );
 		}

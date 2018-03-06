@@ -1,7 +1,7 @@
 import React from 'react';
-import {Button, Spin, Alert, Modal} from 'antd';
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
+import Modal from '../components/Modal';
 
 import {
 	fetchRemoteData,
@@ -51,68 +51,32 @@ class Demo extends React.Component {
 		const {blogname, description, screenshot} = fetched;
 
 		if (typeof this.props.fetched === "undefined" || this.props.isFetching) {
-			return <Spin/>
+			return <span className="spinner"></span>
 		}
 
-		let statusMsg = null;
-
-		if (blogname) {
-			statusMsg = <Alert
-				message={blogname}
-				label={blogname}
-				type="success"
-				showIcon/>
-		} else {
-			statusMsg = <Alert
-				message="Demo is not available"
-				type="error"
-				showIcon/>
-		}
-
-		return (<div>
-			<div>{statusMsg}</div>
-
+		return (
 			<div className="preview">
-				<h3>{blogname}</h3>
-				<p>{description}</p>
-				<span style={{textAlign: 'center'}}>
-				{screenshot ? <img src={screenshot} alt="Preview" width="250"/> : null}
-				</span>
-
+				<h3 className="theme-name">{blogname}</h3>
+				{screenshot ? <img className="theme-screenshot" src={screenshot} alt={blogname} width="250"/> : null}
+				<p className="theme-details">{description}</p>
 				<div>
 					{this.state.status
-						? <div>
-							<Spin/> {this.state.status}
+						? <div className="demo-import-status">
+							<strong>{this.state.status}</strong>
+							{this.state.status !== 'Done!' &&  <span className="spinner"></span>}
 						</div>
 						: null}
 				</div>
-			</div>
 
-			<Modal
-				title="Import"
-				visible={this.state.visible}
+			{
+				this.state.visible && <Modal
+				blogname={blogname}
 				onOk={this.modalConfirm}
 				onCancel={this.modalCancel}
-				cancelText="Cancel"
-				okText="Import"
-			>
-				<strong>Are you sure?</strong>
-				<p>Importing a demo means things like:</p>
-				<ol>
-					<li>Posts</li>
-					<li>Categories</li>
-					<li>Pages</li>
-					<li>Menus</li>
-					<li>Widgets</li>
-					<li>Plugins</li>
-				</ol>
-
-				<p>They will be imported in your website to build a perfect copy of the selected demo.</p>
-
-				<p><strong>Note:</strong> Some options like static pages may be changed</p>
-
-			</Modal>
-		</div>)
+			/>
+				}
+            </div>
+			)
 	}
 
 	triggerImport() {
@@ -185,8 +149,8 @@ class Demo extends React.Component {
 				this.setState({
 					status: 'Done!'
 				});
-
 				console.log(this.state);
+				location.reload();
 			})
 			.catch((err) => {
 				throw new Error('Higher-level error. ' + err.message);

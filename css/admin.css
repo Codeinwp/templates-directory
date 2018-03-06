@@ -233,7 +233,7 @@
 }
 
 .obfx-template-preview.theme-install-overlay .install-theme-info.obfx-theme-info {
-	display: none;
+	 display: none;
 }
 
 .obfx-template-preview.theme-install-overlay .install-theme-info.obfx-theme-info.active {
@@ -335,7 +335,67 @@
 		margin-right: 0;
 	}
 }
-/* Mega z-index hack for ant-modal*/
-div.ant-modal-wrap {
-	z-index: 500001;
+
+#demoDataImporter .demo-import-status {
+	margin-top: 20px;
+}
+
+#demoDataImporter .spinner {
+	float: none;
+	visibility: visible;
+	margin-top: 0;
+}
+
+#demoDataImporter .modal-wrap {
+	position: fixed;
+	background-color: rgba(0,0,0,.4);
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	z-index: 50000;
+	text-align: center;
+}
+
+#demoDataImporter .modal {
+	background:#fff;
+	width:auto;
+	position:relative;
+	display: inline-block;
+	margin: 0 auto;
+	text-align: left;
+	transform: translateY(-50%);
+	top: 50%;
+	border-radius: 3px;
+}
+
+#demoDataImporter .modal-body {
+    padding: 30px 30px 10px;
+}
+#demoDataImporter .modal-header {
+    padding: 15px 30px;
+    border-bottom: 1px solid #efefef;
+}
+#demoDataImporter .modal-header .close {
+	float: right;
+	position: relative;
+	top: -3px;
+	font-size: 24px;
+	opacity: .35;
+	cursor: pointer;
+	transition: .3s ease;
+	will-change: opacity;
+}
+#demoDataImporter .modal-header .close:hover {
+	opacity: .75;
+}
+#demoDataImporter .modal-header .title {margin: 0;display: inline;}
+
+#demoDataImporter .modal-footer {
+	border-top: 1px solid #efefef;
+	padding: 15px 30px;
+	text-align: right;
+}
+#demoDataImporter .modal-footer .button {
+	margin-left: 10px;
 }
