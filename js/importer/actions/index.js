@@ -49,7 +49,7 @@ export function fetchRemoteData( demo ) {
 
 export function startDemoDataImport( demo, importType, success ) {
 	return async (dispatch) => {
-		return await fetch( wpApiSettings.root + 'templates-directory/v1/import_chunk/', {
+		return await fetch( wpApiSettings.root + 'templates-directory/v1/import_chunk', {
 			method: 'POST',
 			credentials: 'same-origin',
 			headers: {
@@ -67,7 +67,7 @@ export function startDemoDataImport( demo, importType, success ) {
 			return response;
 		})
 		.then((response) => response.json())
-		.then((response) => success( importType, response))
+		.then((response) => success( importType, null, response.msg))
 		.catch(() => dispatch(fetchHasError(true)));
 	}
 }
@@ -94,7 +94,6 @@ export function importPlugin( demo, plugin, success ) {
 		})
 		.then((response) => response.json())
 		.catch((err) => {
-			console.log( err );
 			dispatch(fetchHasError(true));
 		});
 	}
@@ -146,7 +145,13 @@ export function importMedia( demo, image, success, last = false ) {
 				return response;
 			})
 			.then((response) => response.json())
-			.then((response) => success( 'image', response))
+			.then((response) => {
+				if ( false === last ) {
+					let entry = [];
+					entry[image] = response;
+					success( 'media', 'images', entry);
+				}
+			})
 			.catch(() => dispatch(fetchHasError(true)));
 	}
 }

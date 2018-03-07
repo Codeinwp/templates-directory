@@ -20,8 +20,16 @@ class DemoDataImporter {
 		add_action( 'rest_api_init', array( $this, 'register_endpoints' ) );
 		$this->plugins_dir = WP_PLUGIN_DIR . '/';
 
+		// meta data with images
 		add_filter( 'demodata_before_import_post_meta__thumbnail_id', array( $this, 'prepare_image_meta_id' ) );
 		add_filter( 'demodata_before_import_post_meta_product_image_gallery', array( $this, 'prepare_image_meta_id' ) );
+
+		// nav menus
+		add_filter( 'demodata_import_after_mod_nav_menu_locations', array(
+			$this,
+			'filter_post_theme_mod_nav_menu_locations'
+		) );
+		add_filter( 'demodata_after_post_type_import', array( $this, 'remap_nav_menu_items' ) );
 	}
 
 	/**
@@ -167,7 +175,7 @@ class DemoDataImporter {
 				$response['msg'] = $this->import_post_types( $demo, $theme_support['demo_url'] );
 				break;
 			case "widgets":
-				$response['msg'] = $this->import_widgets( $demo, $theme_support['demo_url'] );
+				$response['msg'] = $this->import_widgets( $demo );
 				break;
 			case "after_settings":
 				$response['msg'] = $this->import_after_settings();
@@ -237,6 +245,9 @@ class DemoDataImporter {
 		return rest_ensure_response( $install );
 	}
 
+	/**
+	 * @param \WP_REST_Request $request
+	 */
 	public function rest_activate_plugins( \WP_REST_Request $request ) {
 
 		if ( ! current_user_can( 'install_plugins' ) ) {
@@ -273,6 +284,7 @@ class DemoDataImporter {
 
 		if ( ! empty( $params['last'] && empty( $importedMedia ) ) ) {
 			$this->set_imported_data( 'media', $params['last'] );
+
 			return rest_ensure_response( 'success' );
 		}
 
@@ -490,6 +502,9 @@ class DemoDataImporter {
 		}
 
 		if ( ! empty( $imported_ids ) ) {
+
+			$imported_ids = apply_filters( 'demodata_after_post_type_import', $imported_ids );
+
 			$this->set_imported_data( 'post_types', $imported_ids );
 			$this->remap_images_attachments_parents( $imported_ids );
 		}
@@ -497,27 +512,7 @@ class DemoDataImporter {
 		return $imported_ids;
 	}
 
-	protected function remap_images_attachments_parents( $imported_ids ) {
-		$media      = $this->get_imported_data( 'media' );
-		$post_types = $this->get_imported_data( 'post_types' );
-
-		if ( ! empty( $media['images'] ) ) {
-			foreach ( $media['images'] as $remote => $local ) {
-				$attach = get_post( $local );
-
-				$newId = $this->array_search_key( $attach->post_parent, $post_types );
-
-				if ( ! empty( $newId ) ) {
-					wp_update_post( array(
-						'ID'          => $local,
-						'post_parent' => (int) $newId
-					) );
-				}
-			}
-		}
-	}
-
-	protected function import_widgets( $demo, $demo_url ) {
+	protected function import_widgets( $demo ) {
 		$data = $this->get_remote_data( 'widgets' );
 
 		// First let's remove all the widgets in sidebars to avoid a big mess
@@ -648,7 +643,7 @@ class DemoDataImporter {
 
 	protected function import_before_settings() {
 		$settings = $this->get_remote_data( 'before_settings' );
-		$backup = get_option( 'demodata_backup_before_settings' );
+		$backup   = get_option( 'demodata_backup_before_settings' );
 
 		if ( empty( $backup ) ) {
 			$backup = array(
@@ -660,8 +655,8 @@ class DemoDataImporter {
 		if ( ! empty( $settings['options'] ) ) {
 			foreach ( $settings['options'] as $option => $value ) {
 				$back_val = get_option( $option );
-				if( $back_val ) {
-					$backup['options'][$option] = $back_val;
+				if ( $back_val ) {
+					$backup['options'][ $option ] = $back_val;
 				}
 				update_option( $option, apply_filters( 'demodata_import_before_option_' . $option, $value ) );
 			}
@@ -670,10 +665,10 @@ class DemoDataImporter {
 		if ( ! empty( $settings['mods'] ) ) {
 			foreach ( $settings['mods'] as $mod => $value ) {
 				$back_val = get_theme_mod( $mod );
-				if( $back_val ) {
-					$backup['mods'][$mod] = $back_val;
+				if ( $back_val ) {
+					$backup['mods'][ $mod ] = $back_val;
 				}
-				set_theme_mod( $mod, apply_filters( 'demodata_import_after_mod_' . $mod, $value ) );
+				set_theme_mod( $mod, apply_filters( 'demodata_import_before_mod_' . $mod, $value ) );
 			}
 		}
 
@@ -682,7 +677,7 @@ class DemoDataImporter {
 
 	protected function import_after_settings() {
 		$settings = $this->get_remote_data( 'after_settings' );
-		$backup = get_option( 'demodata_backup_after_settings' );
+		$backup   = get_option( 'demodata_backup_after_settings' );
 
 		if ( empty( $backup ) ) {
 			$backup = array(
@@ -694,8 +689,8 @@ class DemoDataImporter {
 		if ( ! empty( $settings['options'] ) ) {
 			foreach ( $settings['options'] as $option => $value ) {
 				$back_val = get_option( $option );
-				if( $back_val ) {
-					$backup['options'][$option] = $back_val;
+				if ( $back_val ) {
+					$backup['options'][ $option ] = $back_val;
 				}
 				update_option( $option, apply_filters( 'demodata_import_after_option_' . $option, $value ) );
 			}
@@ -704,8 +699,8 @@ class DemoDataImporter {
 		if ( ! empty( $settings['mods'] ) ) {
 			foreach ( $settings['mods'] as $mod => $value ) {
 				$back_val = get_theme_mod( $mod );
-				if( $back_val ) {
-					$backup['mods'][$mod] = $back_val;
+				if ( $back_val ) {
+					$backup['mods'][ $mod ] = $back_val;
 				}
 				set_theme_mod( $mod, apply_filters( 'demodata_import_after_mod_' . $mod, $value ) );
 			}
@@ -714,19 +709,123 @@ class DemoDataImporter {
 		return update_option( 'demodata_backup_after_settings', $backup );
 	}
 
+	/** === FILTERS === **/
+
+	protected function remap_images_attachments_parents( $imported_ids ) {
+		$media      = $this->get_imported_data( 'media' );
+		$post_types = $this->get_imported_data( 'post_types' );
+
+		if ( ! empty( $media['images'] ) ) {
+			foreach ( $media['images'] as $remote => $local ) {
+				$attach = get_post( $local );
+
+				$newId = $this->array_search_key( $attach->post_parent, $post_types );
+
+				if ( ! empty( $newId ) ) {
+					wp_update_post( array(
+						'ID'          => $local,
+						'post_parent' => (int) $newId
+					) );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Replace each menu id from `nav_menu_locations` with the new menus ids
+	 *
+	 * @param $locations
+	 *
+	 * @return mixed
+	 */
+	public function filter_post_theme_mod_nav_menu_locations( $locations ) {
+		if ( empty( $locations ) ) {
+			return $locations;
+		}
+
+		$demodata = $this->get_imported_data( 'taxonomies' );
+
+		foreach ( $locations as $location => $menu ) {
+			if ( ! empty( $demodata['nav_menu'][ $menu ] ) ) {
+				$locations[ $location ] = $demodata['nav_menu'][ $menu ];
+			}
+		}
+
+		return $locations;
+	}
+
+	/**
+	 *
+	 */
+	public function remap_nav_menu_items( $imported_post_types ) {
+
+		if ( empty( $imported_post_types['nav_menu_item'] ) ) {
+			return $imported;
+		}
+
+		$taxonomies = $this->get_imported_data( 'taxonomies' );
+
+		$nav_menu_ids = $imported_post_types['nav_menu_item'];
+
+		foreach ( $nav_menu_ids as $remoteID => $nav_menu_id ) {
+			$parent = get_post_meta( $nav_menu_id, '_menu_item_menu_item_parent', true );
+			if ( ! empty( $parent ) && isset( $nav_menu_ids[ $parent ] ) ) {
+				update_post_meta( $nav_menu_id, '_menu_item_menu_item_parent', $nav_menu_ids[ $parent ] );
+			}
+
+			$menu_item_type      = get_post_meta( $nav_menu_id, '_menu_item_type', true );
+			$menu_item_object    = get_post_meta( $nav_menu_id, '_menu_item_object', true );
+			$menu_item_object_id = get_post_meta( $nav_menu_id, '_menu_item_object_id', true );
+
+			// Try to remap custom objects in nav items
+			switch ( $menu_item_type ) {
+				case 'taxonomy':
+					if ( isset( $taxonomies[ $menu_item_object ][ $menu_item_object_id ] ) ) {
+						$menu_item_object_id = $taxonomies[ $menu_item_object ][ $menu_item_object_id ];
+					}
+					break;
+				case 'post_type':
+					if ( isset( $imported_post_types[ $menu_item_object ][ $menu_item_object_id ] ) ) {
+						$menu_item_object_id = $imported_post_types[ $menu_item_object ][ $menu_item_object_id ];
+					}
+					break;
+				case 'custom':
+					/**
+					 * Remap custom links
+					 */
+					$meta_url = get_post_meta( $nav_menu_id, '_menu_item_url', true );
+					if ( isset( $this->theme_support['demo_url'] ) && ! empty( $meta_url ) ) {
+						$meta_url = str_replace( $this->theme_support['demo_url'], site_url(), $meta_url );
+						update_post_meta( $nav_menu_id, '_menu_item_url', $meta_url );
+					}
+					break;
+				default:
+					// no clue
+					break;
+			}
+
+			update_post_meta( $nav_menu_id, '_menu_item_object_id', $menu_item_object_id );
+		}
+
+		return $imported;
+	}
+
+	/** === HELPERS === **/
+
 	/**
 	 * Save data from transient into a protected property, because we'll use it often
 	 *
 	 * @param $demo
 	 */
 	protected function set_remote_data( $demo ) {
-//		delete_transient( 'demodata_for_' . $demo );
+		//delete_transient( 'demodata_for_' . $demo );
 		$data       = get_transient( 'demodata_for_' . $demo );
 		$this->data = $data;
 	}
 
 	/**
 	 * Upload image as attachment.
+	 *
 	 * @param string $url Url to download.
 	 * @param $parent
 	 *
@@ -782,7 +881,7 @@ class DemoDataImporter {
 			$attached_ids = explode( ',', $value );
 
 			foreach ( $attached_ids as $i => $attach_id ) {
-				$attached_ids[ $i ] = $media['images'][  $attach_id ];
+				$attached_ids[ $i ] = $media['images'][ $attach_id ];
 			}
 
 			return join( ',', $attached_ids );
@@ -847,7 +946,7 @@ class DemoDataImporter {
 	 * @param $value
 	 */
 	protected function set_imported_data( $key, $value ) {
-		wp_cache_delete('demodata_imported_data', 'options');
+		wp_cache_delete( 'demodata_imported_data', 'options' );
 		$imported = get_option( 'demodata_imported_data' );
 
 		if ( ! is_array( $imported ) ) {

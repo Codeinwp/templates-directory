@@ -116,11 +116,9 @@ class Demo extends React.Component {
 				this.setState({
 					status: 'Save media'
 				});
-
-				console.log(  this.state.imported.images );
-
+				let media = this.state.imported.media;
 				// send a list of imported media ids to the server
-				return await this.props.importMedia( this.props.name, 1, this.updateImported, this.state.imported.images );
+				return await this.props.importMedia( this.props.name, 1, this.updateImported, media );
 			})
 			.then((p) => {
 				this.setState({
@@ -149,8 +147,7 @@ class Demo extends React.Component {
 				this.setState({
 					status: 'Done!'
 				});
-				console.log(this.state);
-				location.reload();
+				window.location.reload();
 			})
 			.catch((err) => {
 				throw new Error('Higher-level error. ' + err.message);
@@ -197,12 +194,19 @@ class Demo extends React.Component {
 		return {}
 	}
 
-	updateImported(tag, result) {
+	updateImported(tag, id = null, result) {
 		this.setState((prevState, props) => {
 			let {imported} = prevState;
-			// console.log(tag);
-			// console.log(result);
-			imported[tag] = result;
+
+			if ( typeof imported[tag] === "undefined" ) {
+				imported[tag] = {};
+			}
+
+			if ( id ) {
+				imported[tag][id] = {...imported[tag][id], ...result};
+			} else {
+				imported[tag] = result;
+			}
 
 			return {
 				imported: imported
@@ -214,7 +218,6 @@ class Demo extends React.Component {
 const mapStateToProps = (state) => {
 	// Whatever is returned will show up as props
 	// inside of Proposals
-
 	return {
 		isFetching: state.isFetching,
 		fetched: state.data

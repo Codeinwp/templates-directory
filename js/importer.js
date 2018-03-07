@@ -11375,9 +11375,9 @@ var _temp = function () {
         return;
     }
 
-    __REACT_HOT_LOADER__.register(createStoreWithMiddleware, 'createStoreWithMiddleware', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/components/index.js');
+    __REACT_HOT_LOADER__.register(createStoreWithMiddleware, 'createStoreWithMiddleware', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/components/index.js');
 
-    __REACT_HOT_LOADER__.register(store, 'store', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/components/index.js');
+    __REACT_HOT_LOADER__.register(store, 'store', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/components/index.js');
 }();
 
 ;
@@ -30656,15 +30656,15 @@ var _temp = function () {
 		return;
 	}
 
-	__REACT_HOT_LOADER__.register(dataHasErrored, 'dataHasErrored', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/reducers/index.js');
+	__REACT_HOT_LOADER__.register(dataHasErrored, 'dataHasErrored', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/reducers/index.js');
 
-	__REACT_HOT_LOADER__.register(dataIsLoading, 'dataIsLoading', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/reducers/index.js');
+	__REACT_HOT_LOADER__.register(dataIsLoading, 'dataIsLoading', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/reducers/index.js');
 
-	__REACT_HOT_LOADER__.register(getData, 'getData', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/reducers/index.js');
+	__REACT_HOT_LOADER__.register(getData, 'getData', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/reducers/index.js');
 
-	__REACT_HOT_LOADER__.register(rootReducer, 'rootReducer', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/reducers/index.js');
+	__REACT_HOT_LOADER__.register(rootReducer, 'rootReducer', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/reducers/index.js');
 
-	__REACT_HOT_LOADER__.register(_default, 'default', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/reducers/index.js');
+	__REACT_HOT_LOADER__.register(_default, 'default', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/reducers/index.js');
 }();
 
 ;
@@ -30729,9 +30729,9 @@ var _temp = function () {
         return;
     }
 
-    __REACT_HOT_LOADER__.register(App, 'App', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/components/app.js');
+    __REACT_HOT_LOADER__.register(App, 'App', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/components/app.js');
 
-    __REACT_HOT_LOADER__.register(_default, 'default', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/components/app.js');
+    __REACT_HOT_LOADER__.register(_default, 'default', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/components/app.js');
 }();
 
 ;
@@ -30747,6 +30747,8 @@ var _temp = function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_redux__ = __webpack_require__(144);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Modal__ = __webpack_require__(400);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions__ = __webpack_require__(401);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _this = this;
@@ -30937,6 +30939,7 @@ var Demo = function (_React$Component) {
 				};
 			}()).then(function () {
 				var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(p) {
+					var media;
 					return regeneratorRuntime.wrap(function _callee3$(_context3) {
 						while (1) {
 							switch (_context3.prev = _context3.next) {
@@ -30944,12 +30947,11 @@ var Demo = function (_React$Component) {
 									_this3.setState({
 										status: 'Save media'
 									});
-
-									console.log(_this3.state.imported.images);
-
+									media = _this3.state.imported.media;
 									// send a list of imported media ids to the server
+
 									_context3.next = 4;
-									return _this3.props.importMedia(_this3.props.name, 1, _this3.updateImported, _this3.state.imported.images);
+									return _this3.props.importMedia(_this3.props.name, 1, _this3.updateImported, media);
 
 								case 4:
 									return _context3.abrupt("return", _context3.sent);
@@ -30989,8 +30991,7 @@ var Demo = function (_React$Component) {
 				_this3.setState({
 					status: 'Done!'
 				});
-				console.log(_this3.state);
-				location.reload();
+				window.location.reload();
 			}).catch(function (err) {
 				throw new Error('Higher-level error. ' + err.message);
 			});
@@ -31136,13 +31137,23 @@ var Demo = function (_React$Component) {
 		}
 	}, {
 		key: "updateImported",
-		value: function updateImported(tag, result) {
+		value: function updateImported(tag) {
+			var id = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+			var result = arguments[2];
+
 			this.setState(function (prevState, props) {
 				var imported = prevState.imported;
-				// console.log(tag);
-				// console.log(result);
 
-				imported[tag] = result;
+
+				if (typeof imported[tag] === "undefined") {
+					imported[tag] = {};
+				}
+
+				if (id) {
+					imported[tag][id] = _extends({}, imported[tag][id], result);
+				} else {
+					imported[tag] = result;
+				}
 
 				return {
 					imported: imported
@@ -31157,7 +31168,6 @@ var Demo = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state) {
 	// Whatever is returned will show up as props
 	// inside of Proposals
-
 	return {
 		isFetching: state.isFetching,
 		fetched: state.data
@@ -31190,15 +31200,15 @@ var _temp = function () {
 		return;
 	}
 
-	__REACT_HOT_LOADER__.register(wait, "wait", "/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/containers/demo.js");
+	__REACT_HOT_LOADER__.register(wait, "wait", "C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/containers/demo.js");
 
-	__REACT_HOT_LOADER__.register(Demo, "Demo", "/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/containers/demo.js");
+	__REACT_HOT_LOADER__.register(Demo, "Demo", "C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/containers/demo.js");
 
-	__REACT_HOT_LOADER__.register(mapStateToProps, "mapStateToProps", "/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/containers/demo.js");
+	__REACT_HOT_LOADER__.register(mapStateToProps, "mapStateToProps", "C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/containers/demo.js");
 
-	__REACT_HOT_LOADER__.register(mapDispatchToProps, "mapDispatchToProps", "/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/containers/demo.js");
+	__REACT_HOT_LOADER__.register(mapDispatchToProps, "mapDispatchToProps", "C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/containers/demo.js");
 
-	__REACT_HOT_LOADER__.register(_default, "default", "/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/containers/demo.js");
+	__REACT_HOT_LOADER__.register(_default, "default", "C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/containers/demo.js");
 }();
 
 ;
@@ -31376,9 +31386,9 @@ var _temp = function () {
         return;
     }
 
-    __REACT_HOT_LOADER__.register(Modal, 'Modal', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/components/Modal.js');
+    __REACT_HOT_LOADER__.register(Modal, 'Modal', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/components/Modal.js');
 
-    __REACT_HOT_LOADER__.register(_default, 'default', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/components/Modal.js');
+    __REACT_HOT_LOADER__.register(_default, 'default', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/components/Modal.js');
 }();
 
 ;
@@ -31460,7 +31470,7 @@ function startDemoDataImport(demo, importType, success) {
 					switch (_context.prev = _context.next) {
 						case 0:
 							_context.next = 2;
-							return fetch(wpApiSettings.root + 'templates-directory/v1/import_chunk/', {
+							return fetch(wpApiSettings.root + 'templates-directory/v1/import_chunk', {
 								method: 'POST',
 								credentials: 'same-origin',
 								headers: {
@@ -31480,7 +31490,7 @@ function startDemoDataImport(demo, importType, success) {
 							}).then(function (response) {
 								return response.json();
 							}).then(function (response) {
-								return success(importType, response);
+								return success(importType, null, response.msg);
 							}).catch(function () {
 								return dispatch(fetchHasError(true));
 							});
@@ -31532,7 +31542,6 @@ function importPlugin(demo, plugin, success) {
 							}).then(function (response) {
 								return response.json();
 							}).catch(function (err) {
-								console.log(err);
 								dispatch(fetchHasError(true));
 							});
 
@@ -31633,7 +31642,11 @@ function importMedia(demo, image, success) {
 		}).then(function (response) {
 			return response.json();
 		}).then(function (response) {
-			return success('image', response);
+			if (false === last) {
+				var entry = [];
+				entry[image] = response;
+				success('media', 'images', entry);
+			}
 		}).catch(function () {
 			return dispatch(fetchHasError(true));
 		});
@@ -31646,21 +31659,21 @@ var _temp = function () {
 		return;
 	}
 
-	__REACT_HOT_LOADER__.register(isFetching, 'isFetching', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/actions/index.js');
+	__REACT_HOT_LOADER__.register(isFetching, 'isFetching', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/actions/index.js');
 
-	__REACT_HOT_LOADER__.register(fetchHasError, 'fetchHasError', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/actions/index.js');
+	__REACT_HOT_LOADER__.register(fetchHasError, 'fetchHasError', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/actions/index.js');
 
-	__REACT_HOT_LOADER__.register(isSuccessfulFetch, 'isSuccessfulFetch', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/actions/index.js');
+	__REACT_HOT_LOADER__.register(isSuccessfulFetch, 'isSuccessfulFetch', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/actions/index.js');
 
-	__REACT_HOT_LOADER__.register(fetchRemoteData, 'fetchRemoteData', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/actions/index.js');
+	__REACT_HOT_LOADER__.register(fetchRemoteData, 'fetchRemoteData', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/actions/index.js');
 
-	__REACT_HOT_LOADER__.register(startDemoDataImport, 'startDemoDataImport', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/actions/index.js');
+	__REACT_HOT_LOADER__.register(startDemoDataImport, 'startDemoDataImport', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/actions/index.js');
 
-	__REACT_HOT_LOADER__.register(importPlugin, 'importPlugin', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/actions/index.js');
+	__REACT_HOT_LOADER__.register(importPlugin, 'importPlugin', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/actions/index.js');
 
-	__REACT_HOT_LOADER__.register(activatePlugins, 'activatePlugins', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/actions/index.js');
+	__REACT_HOT_LOADER__.register(activatePlugins, 'activatePlugins', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/actions/index.js');
 
-	__REACT_HOT_LOADER__.register(importMedia, 'importMedia', '/Users/Andrei/Local Sites/templates/app/public/wp-content/mu-plugins/templates-directory/js/importer/actions/index.js');
+	__REACT_HOT_LOADER__.register(importMedia, 'importMedia', 'C:/Users/Andrei SSD/Local Sites/smu/app/public/wp-content/mu-plugins/libs/templates-directory/js/importer/actions/index.js');
 }();
 
 ;
