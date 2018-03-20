@@ -21,6 +21,26 @@
 	box-shadow: 0 1px 1px -1px rgba(0,0,0,0.1);
 	cursor: pointer;
 }
+.obfx-preview-wrap {
+    margin: 15px 0;
+    position: relative;
+}
+
+.obfx-preview-wrap .badge,
+.obfx-template .badge {
+	position: absolute;
+	color: #fff;
+	z-index: 100000;
+	background-color: #00a6e3;
+	padding: 7px 12px;
+	text-transform: uppercase;
+	border-radius: 0 0 3px 0;
+	top: 1px;
+	left: 0;
+	box-shadow: 2px 2px 2px 0 rgba(0,0,0,0.25);
+	font-weight: 500;
+	font-size: 20px;
+}
 
 .obfx-template:nth-child(3n) {
 	margin-right: 0;
@@ -154,7 +174,7 @@
 }
 
 .obfx-hide {
-	display: none;
+	display: none !important;
 }
 
 .obfx-import-elementor-hidden-form {
@@ -230,6 +250,7 @@
 
 .obfx-template-preview.theme-install-overlay .install-theme-info.obfx-theme-info .theme-screenshot {
 	width: 100%;
+	margin: 0;
 }
 
 .obfx-template-preview.theme-install-overlay .install-theme-info.obfx-theme-info {

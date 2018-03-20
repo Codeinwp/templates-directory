@@ -203,6 +203,16 @@ var obfx_template_directory = function ( $ ) {
 			}
 
 			function setupImportButton() {
+				var button = $( '.wp-full-overlay-header .obfx-import-template' );
+				var dataUpsell = $('.active').data('upsell');
+				var upsellButton = $('.obfx-upsell-button');
+				if( dataUpsell === 'yes' ) {
+					$(button).hide();
+					$(upsellButton).show();
+					return false;
+				}
+				$(button).show();
+				$(upsellButton).hide();
 				var installable = $( '.active .obfx-installable' );
 				if ( installable.length > 0 ) {
 					$( '.wp-full-overlay-header .obfx-import-template' ).text( 'Install and Import' );
@@ -210,7 +220,6 @@ var obfx_template_directory = function ( $ ) {
 					$( '.wp-full-overlay-header .obfx-import-template' ).text( 'Import' );
 				}
 				var activeTheme = $( '.obfx-theme-info.active' );
-				var button = $( '.wp-full-overlay-header .obfx-import-template' );
 				$( button ).attr( 'data-template-file', $( activeTheme ).data( 'template-file' ) );
 				$( button ).attr( 'data-template-title', $( activeTheme ).data( 'template-title' ) );
 			}

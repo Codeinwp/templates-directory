@@ -21,6 +21,9 @@ if ( is_array( $templates_array ) ) {
 
 	foreach ( $templates_array as $template => $properties ) {
 		$html .= '<div class="obfx-template">';
+		if( isset( $properties['has_badge'] ) ) {
+			$html .= '<span class="badge"> ' . esc_html( $properties['has_badge'] ) . ' </span>';
+		}
 		$html .= '<div class="more-details obfx-preview-template" data-demo-url="' . esc_url( $properties['demo_url'] ) . '" data-template-slug="' . esc_attr( $template ) . '" ><span>' . __( 'More Details', 'textdomain' ) . '</span></div>';
 		$html .= '<div class="obfx-template-screenshot">';
 		$html .= '<img src="' . esc_url( $properties['screenshot'] ) . '" alt="' . esc_html( $properties['title'] ) . '" >';
@@ -50,16 +53,30 @@ echo $html; ?>
 				<button class="next-theme"><span class="screen-reader-text"><?php esc_html_e( 'Next', 'textdomain' ); ?></span></button>
 			</div>
 			<span class="obfx-import-template button button-primary"><?php esc_html_e( 'Import', 'textdomain' ); ?></span>
+            <!-- TODO: ADD LINK TO PRO PLUGIN -->
+            <a href="https://themeisle.com/wordpress-plugins/" target="_blank" class="obfx-upsell-button button button-primary"><?php esc_html_e( 'See Pro Version', 'textdomain' ); ?></a>
+
 		</div>
 		<div class="wp-full-overlay-sidebar-content">
 			<?php
-			foreach ( $templates_array as $template => $properties ) { ?>
+			foreach ( $templates_array as $template => $properties ) {
+				$upsell = 'no';
+				if ( isset( $properties['has_badge'] ) ) {
+					$upsell = 'yes';
+				}
+				?>
 				<div class="install-theme-info obfx-theme-info <?php echo esc_attr( $template ); ?>"
-				     data-demo-url="<?php echo esc_url( $properties['demo_url'] ); ?>"
-				     data-template-file="<?php echo esc_url( $properties['import_file'] ); ?>"
-				     data-template-title="<?php echo esc_html( $properties['title'] ); ?>">
+					 data-demo-url="<?php echo esc_url( $properties['demo_url'] ); ?>"
+					 data-template-file="<?php echo esc_url( $properties['import_file'] ); ?>"
+					 data-template-title="<?php echo esc_html( $properties['title'] ); ?>"
+					 data-upsell="<?php echo esc_attr( $upsell ) ?>">
 					<h3 class="theme-name"><?php echo esc_html( $properties['title'] ); ?></h3>
-					<img class="theme-screenshot" src="<?php echo esc_url( $properties['screenshot'] ); ?>" alt="<?php echo esc_html( $properties['title'] ); ?>">
+					<div class="obfx-preview-wrap">
+						<img class="theme-screenshot" src="<?php echo esc_url( $properties['screenshot'] ); ?>" alt="<?php echo esc_html( $properties['title'] ); ?>">
+						<?php if( isset( $properties['has_badge'] ) ) { ?>
+						<span class="badge"> <?php echo esc_html( $properties['has_badge'] ); ?></span>
+						<?php } ?>
+					</div>
 					<div class="theme-details">
 						<?php echo esc_html( $properties['description'] ); ?>
 					</div>
