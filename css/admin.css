@@ -30,7 +30,7 @@
 .obfx-template .badge {
 	position: absolute;
 	color: #fff;
-	z-index: 100000;
+	z-index: 10;
 	background-color: #00a6e3;
 	padding: 7px 12px;
 	text-transform: uppercase;
