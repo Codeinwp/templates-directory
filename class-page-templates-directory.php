@@ -55,7 +55,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		public function enqueue_template_dir_scripts() {
 			$current_screen = get_current_screen();
 
-			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' || $current_screen->id === 'pages_page_obfx_template_dir' ) {
+			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' || $current_screen->id === 'sizzify_page_obfx_template_dir' ) {
 				$script_handle = $this->slug . '-script';
 				wp_enqueue_script( 'plugin-install' );
 				wp_enqueue_script( 'updates' );
@@ -220,7 +220,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function add_menu_page() {
 			add_submenu_page(
-				'edit.php?post_type=page', __( 'Orbit Fox Template Directory', 'textdomain' ), __( 'Template Directory', 'textdomain' ), 'manage_options', 'obfx_template_dir',
+				'sizzify-admin', __( 'Orbit Fox Template Directory', 'textdomain' ), __( 'Template Directory', 'textdomain' ), 'manage_options', 'obfx_template_dir',
 				array( $this, 'render_admin_page' )
 			);
 		}
