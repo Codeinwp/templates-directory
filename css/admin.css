@@ -306,6 +306,14 @@
 	display: none;
 }
 
+#obfx-template-dir-fetch-templates {
+	display: block;
+	margin: 0 auto;
+}
+#obfx-template-dir-fetch-templates .dashicons {
+	margin: 3px 5px 0 -2px;
+}
+
 @media only screen and (min-width: 1640px) {
 	.obfx-template {
 		width: 22.7%;

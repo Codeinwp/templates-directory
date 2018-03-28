@@ -44,6 +44,9 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			add_action( 'init', array( $this, 'load_full_width_page_templates' ), 11 );
 			// Remove the blank template from the page template selector
 			add_filter( 'fwpt_templates_list', array( $this, 'filter_fwpt_templates_list' ) );
+			// Filter to add fetched.
+			add_filter( 'template_directory_templates_list', array( $this, 'filter_templates' ), 99 );
+
 
 			$default_source_url = apply_filters( 'templates_directory_source_url', 'https://raw.githubusercontent.com/Codeinwp/obfx-templates/master/' );
 			$this->set_source_url( $default_source_url );
@@ -55,18 +58,24 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		public function enqueue_template_dir_scripts() {
 			$current_screen = get_current_screen();
 
-			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' || $current_screen->id === 'sizzify_page_obfx_template_dir' ) {
+			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' || $current_screen->id === 'sizzify_page_sizzify_template_dir' ) {
+				if( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
+					$plugin_slug = 'obfx';
+				} else {
+					$plugin_slug = 'sizzify';
+				}
 				$script_handle = $this->slug . '-script';
 				wp_enqueue_script( 'plugin-install' );
 				wp_enqueue_script( 'updates' );
 				wp_register_script( $script_handle, plugin_dir_url( $this->get_dir() ) . $this->slug . '/js/script.js', array( 'jquery' ), $this::$version );
 				wp_localize_script( $script_handle, 'importer_endpoint',
 					array(
-						'url'   => $this->get_endpoint_url( '/import_elementor' ),
-						'nonce' => wp_create_nonce( 'wp_rest' ),
+						'url'                 => $this->get_endpoint_url( '/import_elementor' ),
+						'plugin_slug'         => $plugin_slug,
+						'fetch_templates_url' => $this->get_endpoint_url( '/fetch_templates' ),
+						'nonce'               => wp_create_nonce( 'wp_rest' ),
 					) );
 				wp_enqueue_script( $script_handle );
-
 				wp_enqueue_style( $this->slug . '-style', plugin_dir_url( $this->get_dir() ) . $this->slug . '/css/admin.css', array(), $this::$version );
 			}
 		}
@@ -90,6 +99,53 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 				'methods'  => 'POST',
 				'callback' => array( $this, 'import_elementor' ),
 			) );
+			register_rest_route( $this->slug, '/fetch_templates', array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'fetch_templates' ),
+			) );
+		}
+
+		/**
+		 * Function to fetch templates.
+		 *
+		 * @return array|bool|\WP_Error
+		 */
+		public function fetch_templates() {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return false;
+			}
+			if( empty ( $_POST['plugin_slug'] ) ) {
+				return false;
+			}
+
+			$plugin_slug = $_POST['plugin_slug'];
+			$query_args    = array( 'license' => '', 'url' => get_home_url(), 'name' => $plugin_slug );
+
+			$license = get_option('eaw_premium_license');
+			if( !empty ( $license ) ) {
+				$query_args['license'] = $license;
+			}
+			$url = add_query_arg( $query_args, 'https://themeisle.com/?edd_action=get_templates' );
+
+			$request = wp_remote_post( esc_url_raw( $url ) );
+			$response = json_decode( $request['body'], true );
+
+			if( !empty( $response ) ) {
+				update_option( 'obfx_synced_templates', $response );
+			}
+			die();
+		}
+
+		public function filter_templates($templates) {
+			$fetched = get_option( 'obfx_synced_templates' );
+			if( ! isset( $fetched ) ) {
+				return $templates;
+			}
+			if( ! is_array( $fetched ) ) {
+				return $templates;
+			}
+			$new_templates = array_merge( $templates, $fetched['templates'] );
+			return $new_templates;
 		}
 
 		/**
@@ -98,7 +154,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * @return array
 		 */
 		public function templates_list() {
-			$defaults_if_empty  = array(
+			$defaults_if_empty = array(
 				'title'            => __( 'A new Orbit Fox Template', 'textdomain' ),
 				'screenshot'       => esc_url( 'https://raw.githubusercontent.com/Codeinwp/obfx-templates/master/placeholder.png' ),
 				'description'      => __( 'This is an awesome Orbit Fox Template.', 'textdomain' ),
@@ -220,7 +276,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function add_menu_page() {
 			add_submenu_page(
-				'sizzify-admin', __( 'Orbit Fox Template Directory', 'textdomain' ), __( 'Template Directory', 'textdomain' ), 'manage_options', 'obfx_template_dir',
+				'sizzify-admin', apply_filters( 'obfx_template_dir_page_title', __( 'Orbit Fox Template Directory', 'textdomain' ) ), __( 'Template Directory', 'textdomain' ), 'manage_options', apply_filters( 'obfx_template_dir_page_slug', 'obfx_template_dir' ),
 				array( $this, 'render_admin_page' )
 			);
 		}
@@ -366,12 +422,13 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * Getter method for the source url
 		 * @return mixed
 		 */
-		public function get_source_url(){
+		public function get_source_url() {
 			return $this->source_url;
 		}
 
 		/**
 		 * Setting method for source url
+		 *
 		 * @param $url
 		 */
 		protected function set_source_url( $url ) {
@@ -429,8 +486,10 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 *
 		 * @since   1.0.0
 		 * @access  protected
+		 *
 		 * @param   string $view_name The view name w/o the `-tpl.php` part.
-		 * @param   array  $args An array of arguments to be passed to the view.
+		 * @param   array $args An array of arguments to be passed to the view.
+		 *
 		 * @return string
 		 */
 		protected function render_view( $view_name, $args = array() ) {
@@ -444,6 +503,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			if ( file_exists( $file ) ) {
 				include $file;
 			}
+
 			return ob_get_clean();
 		}
 

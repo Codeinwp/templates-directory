@@ -14,54 +14,66 @@ $preview_url = add_query_arg( 'obfx_templates', '', home_url() ); // Define quer
 
 $html = '';
 
-if ( is_array( $templates_array ) ) {
-	$html .= '<div class="obfx-template-dir wrap">';
-	$html .= '<h1 class="wp-heading-inline">' . __( 'Orbit Fox Template Directory', 'textdomain' ) . '</h1>';
-	$html .= '<div class="obfx-template-browser">';
+if ( is_array( $templates_array ) ) { ?>
+	<div class="obfx-template-dir wrap">
 
-	foreach ( $templates_array as $template => $properties ) {
-		$html .= '<div class="obfx-template">';
-		if( isset( $properties['has_badge'] ) ) {
-			$html .= '<span class="badge"> ' . esc_html( $properties['has_badge'] ) . ' </span>';
-		}
-		$html .= '<div class="more-details obfx-preview-template" data-demo-url="' . esc_url( $properties['demo_url'] ) . '" data-template-slug="' . esc_attr( $template ) . '" ><span>' . __( 'More Details', 'textdomain' ) . '</span></div>';
-		$html .= '<div class="obfx-template-screenshot">';
-		$html .= '<img src="' . esc_url( $properties['screenshot'] ) . '" alt="' . esc_html( $properties['title'] ) . '" >';
-		$html .= '</div>'; // .obfx-template-screenshot
-		$html .= '<h2 class="template-name template-header">' . esc_html( $properties['title'] ) . '</h2>';
-		$html .= '<div class="obfx-template-actions">';
+        <h2 class="wp-heading-inline"> <?php echo apply_filters( 'obfx_template_dir_page_title', __( 'Orbit Fox Template Directory', 'textdomain' ) ); ?></h2>
+        <button id="obfx-template-dir-fetch-templates" class="button-primary button"><i class="dashicons dashicons-update"></i><?php echo __( 'Sync Templates', 'textdomain' ); ?></button>
+        <div class="obfx-template-browser">
+			<?php
+			foreach ( $templates_array as $template => $properties ) {
+				?>
+				<div class="obfx-template">
+					<?php if ( isset( $properties['has_badge'] ) ) { ?>
+						<span class="badge"><?php echo esc_html( $properties['has_badge'] ); ?></span>
+					<?php } ?>
+					<div class="more-details obfx-preview-template"
+						 data-demo-url="<?php echo esc_url( $properties['demo_url'] ); ?>"
+						 data-template-slug="<?php echo esc_attr( $template ); ?>">
+						<span><?php echo __( 'More Details', 'textdomain' ); ?></span></div>
+					<div class="obfx-template-screenshot">
+						<img src="<?php echo esc_url( $properties['screenshot'] ); ?>"
+							 alt="<?php echo esc_html( $properties['title'] ); ?>">
+					</div>
+					<h2 class="template-name template-header"><?php echo esc_html( $properties['title'] ); ?></h2>
+					<div class="obfx-template-actions">
 
-		if ( ! empty( $properties['demo_url'] ) ) {
-			$html .= '<a class="button obfx-preview-template" data-demo-url="' . esc_url( $properties['demo_url'] ) . '" data-template-slug="' . esc_attr( $template ) . '" >' . __( 'Preview', 'textdomain' ) . '</a>';
-		}
-		$html .= '</div>'; // .obfx-template-actions
-		$html .= '</div>'; // .obfx-template
-	}
-	$html .= '</div>'; // .obfx-template-browser
-	$html .= '</div>'; // .obfx-template-dir
-	$html .= '<div class="wp-clearfix clearfix"></div>';
-}// End if().
-
-echo $html; ?>
+						<?php if ( ! empty( $properties['demo_url'] ) ) { ?>
+							<a class="button obfx-preview-template"
+							   data-demo-url="<?php echo esc_url( $properties['demo_url'] ); ?>"
+							   data-template-slug="<?php echo esc_attr( $template ); ?>"><?php echo __( 'Preview', 'textdomain' ); ?></a>
+						<?php } ?>
+					</div>
+				</div>
+			<?php } ?>
+		</div>
+	</div>
+	<div class="wp-clearfix clearfix"></div>
+<?php } // End if().
+?>
 
 <div class="obfx-template-preview theme-install-overlay wp-full-overlay expanded" style="display: none;">
 	<div class="wp-full-overlay-sidebar">
 		<div class="wp-full-overlay-header">
-			<button class="close-full-overlay"><span class="screen-reader-text"><?php esc_html_e( 'Close', 'textdomain' ); ?></span></button>
+			<button class="close-full-overlay"><span
+						class="screen-reader-text"><?php esc_html_e( 'Close', 'textdomain' ); ?></span></button>
 			<div class="obfx-next-prev">
-				<button class="previous-theme"><span class="screen-reader-text"><?php esc_html_e( 'Previous', 'textdomain' ); ?></span></button>
-				<button class="next-theme"><span class="screen-reader-text"><?php esc_html_e( 'Next', 'textdomain' ); ?></span></button>
+				<button class="previous-theme"><span
+							class="screen-reader-text"><?php esc_html_e( 'Previous', 'textdomain' ); ?></span></button>
+				<button class="next-theme"><span
+							class="screen-reader-text"><?php esc_html_e( 'Next', 'textdomain' ); ?></span></button>
 			</div>
 			<span class="obfx-import-template button button-primary"><?php esc_html_e( 'Import', 'textdomain' ); ?></span>
-            <!-- TODO: ADD LINK TO PRO PLUGIN -->
-            <a href="https://themeisle.com/wordpress-plugins/" target="_blank" class="obfx-upsell-button button button-primary"><?php esc_html_e( 'See Pro Version', 'textdomain' ); ?></a>
+			<!-- TODO: ADD LINK TO PRO PLUGIN -->
+			<a href="https://themeisle.com/wordpress-plugins/" target="_blank"
+			   class="obfx-upsell-button button button-primary"><?php esc_html_e( 'See Pro Version', 'textdomain' ); ?></a>
 
 		</div>
 		<div class="wp-full-overlay-sidebar-content">
 			<?php
 			foreach ( $templates_array as $template => $properties ) {
 				$upsell = 'no';
-				if ( isset( $properties['has_badge'] ) ) {
+				if ( isset( $properties['has_badge'] ) && ! isset( $properties['import_file'] ) ) {
 					$upsell = 'yes';
 				}
 				?>
@@ -72,9 +84,10 @@ echo $html; ?>
 					 data-upsell="<?php echo esc_attr( $upsell ) ?>">
 					<h3 class="theme-name"><?php echo esc_html( $properties['title'] ); ?></h3>
 					<div class="obfx-preview-wrap">
-						<img class="theme-screenshot" src="<?php echo esc_url( $properties['screenshot'] ); ?>" alt="<?php echo esc_html( $properties['title'] ); ?>">
-						<?php if( isset( $properties['has_badge'] ) ) { ?>
-						<span class="badge"> <?php echo esc_html( $properties['has_badge'] ); ?></span>
+						<img class="theme-screenshot" src="<?php echo esc_url( $properties['screenshot'] ); ?>"
+							 alt="<?php echo esc_html( $properties['title'] ); ?>">
+						<?php if ( isset( $properties['has_badge'] ) ) { ?>
+							<span class="badge"> <?php echo esc_html( $properties['has_badge'] ); ?></span>
 						<?php } ?>
 					</div>
 					<div class="theme-details">
