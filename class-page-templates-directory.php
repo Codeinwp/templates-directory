@@ -57,7 +57,6 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function enqueue_template_dir_scripts() {
 			$current_screen = get_current_screen();
-
 			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' || $current_screen->id === 'sizzify_page_sizzify_template_dir' ) {
 				if( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
 					$plugin_slug = 'obfx';
@@ -131,20 +130,25 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			$response = json_decode( $request['body'], true );
 
 			if( !empty( $response ) ) {
-				update_option( 'obfx_synced_templates', $response );
+				update_option( $plugin_slug . '_synced_templates', $response );
 			}
 			die();
 		}
 
 		public function filter_templates($templates) {
-			$fetched = get_option( 'obfx_synced_templates' );
+			$current_screen = get_current_screen();
+			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
+				$fetched = get_option( 'obfx_synced_templates' );
+			} else {
+				$fetched = get_option( 'sizzify_synced_templates' );
+			}
 			if( ! isset( $fetched ) ) {
 				return $templates;
 			}
 			if( ! is_array( $fetched ) ) {
 				return $templates;
 			}
-			$new_templates = array_merge( $templates, $fetched['templates'] );
+			$new_templates = array_merge( $fetched['templates'], $templates );
 			return $new_templates;
 		}
 
@@ -275,10 +279,14 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * Add the 'Template Directory' page to the dashboard menu.
 		 */
 		public function add_menu_page() {
-			add_submenu_page(
-				'sizzify-admin', apply_filters( 'obfx_template_dir_page_title', __( 'Orbit Fox Template Directory', 'textdomain' ) ), __( 'Template Directory', 'textdomain' ), 'manage_options', apply_filters( 'obfx_template_dir_page_slug', 'obfx_template_dir' ),
-				array( $this, 'render_admin_page' )
-			);
+			$products = apply_filters( 'obfx_template_dir_products', array() );
+			foreach($products as $product){
+				add_submenu_page(
+					$product['parent_page_slug'], $product['directory_page_title'], __( 'Template Directory', 'textdomain' ), 'manage_options', $product['page_slug'],
+					array( $this, 'render_admin_page' )
+				);
+			}
+
 		}
 
 		/**

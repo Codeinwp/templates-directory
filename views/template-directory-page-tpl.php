@@ -64,9 +64,8 @@ if ( is_array( $templates_array ) ) { ?>
 							class="screen-reader-text"><?php esc_html_e( 'Next', 'textdomain' ); ?></span></button>
 			</div>
 			<span class="obfx-import-template button button-primary"><?php esc_html_e( 'Import', 'textdomain' ); ?></span>
-			<!-- TODO: ADD LINK TO PRO PLUGIN -->
-			<a href="https://themeisle.com/wordpress-plugins/" target="_blank"
-			   class="obfx-upsell-button button button-primary"><?php esc_html_e( 'See Pro Version', 'textdomain' ); ?></a>
+			<a href="https://themeisle.com/plugins/sizzify-elementor-addons-templates" target="_blank"
+  class="obfx-upsell-button button button-primary"><?php esc_html_e( 'See Pro Version', 'textdomain' ); ?></a>
 
 		</div>
 		<div class="wp-full-overlay-sidebar-content">
