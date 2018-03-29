@@ -74,6 +74,7 @@ if ( is_array( $templates_array ) ) { ?>
 				$upsell = 'no';
 				if ( isset( $properties['has_badge'] ) && ! isset( $properties['import_file'] ) ) {
 					$upsell = 'yes';
+					$properties['import_file'] = '';
 				}
 				?>
 				<div class="install-theme-info obfx-theme-info <?php echo esc_attr( $template ); ?>"

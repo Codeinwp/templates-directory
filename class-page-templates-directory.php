@@ -120,16 +120,19 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			$plugin_slug = $_POST['plugin_slug'];
 			$query_args    = array( 'license' => '', 'url' => get_home_url(), 'name' => $plugin_slug );
 
-			$license = get_option('eaw_premium_license');
-			if( !empty ( $license ) ) {
+			$license = get_option('eaw_premium_license_data','');
+
+			if( ! empty ( $license ) ) {
+				$license= isset($license->key) ? $license->key :'';
 				$query_args['license'] = $license;
+				$query_args['_'] = time();
 			}
 			$url = add_query_arg( $query_args, 'https://themeisle.com/?edd_action=get_templates' );
 
-			$request = wp_remote_post( esc_url_raw( $url ) );
-			$response = json_decode( $request['body'], true );
+			$request = wp_remote_retrieve_body( wp_remote_post( esc_url_raw( $url ) ) );
+			$response = json_decode( $request, true );
 
-			if( !empty( $response ) ) {
+			if( ! empty( $response ) ) {
 				update_option( $plugin_slug . '_synced_templates', $response );
 			}
 			die();
@@ -142,13 +145,14 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			} else {
 				$fetched = get_option( 'sizzify_synced_templates' );
 			}
-			if( ! isset( $fetched ) ) {
+			if( empty( $fetched ) ) {
 				return $templates;
 			}
 			if( ! is_array( $fetched ) ) {
 				return $templates;
 			}
-			$new_templates = array_merge( $fetched['templates'], $templates );
+			$new_templates = array_merge( $templates,$fetched['templates'] );
+
 			return $new_templates;
 		}
 
