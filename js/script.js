@@ -138,7 +138,7 @@ var obfx_template_directory = function ( $ ) {
 
 			// Handle sidebar collapse in preview.
 			$( '.obfx-template-preview' ).on(
-				'click', '.collapse-sidebar', function () {
+				'click', '.collapse-sidebar', function (event) {
 					event.preventDefault();
 					var overlay = $( '.obfx-template-preview' );
 					if ( overlay.hasClass( 'expanded' ) ) {
