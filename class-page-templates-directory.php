@@ -14,7 +14,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * The version of this library
 		 * @var string
 		 */
-		public static $version = '1.0.2';
+		public static $version = '1.0.3';
 
 		/**
 		 * Holds the module slug.

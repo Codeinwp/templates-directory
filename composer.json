@@ -2,7 +2,7 @@
   "name": "codeinwp/templates-directory",
   "description": "A WordPress library to manage page templates.",
   "type": "library",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "GPL-2.0-or-later",
   "homepage": "https://github.com/Codeinwp/templates-directory",
   "authors": [
