@@ -1,17 +1,33 @@
 <?php
+/**
+ * Template Directory.
+ *
+ * @package OBFX
+ */
 
 namespace ThemeIsle;
 
+use \Themeisle\Site_Import as Site_Import;
+use \ThemeIsle\FullWidthTemplates as Full_Width_Templates;
+
 if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
+	/**
+	 * Class PageTemplatesDirectory
+	 *
+	 * @package ThemeIsle
+	 */
 	class PageTemplatesDirectory {
 
 		/**
+		 * Instance of PageTemplatesDirectory
+		 *
 		 * @var PageTemplatesDirectory
 		 */
 		protected static $instance = null;
 
 		/**
 		 * The version of this library
+		 *
 		 * @var string
 		 */
 		public static $version = '1.0.3';
@@ -25,6 +41,11 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		protected $slug = 'templates-directory';
 
+		/**
+		 * Template directory Source URL.
+		 *
+		 * @var string $source_url The source url.
+		 */
 		protected $source_url;
 
 		/**
@@ -42,6 +63,8 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_template_dir_scripts' ) );
 			// Get the full-width pages feature
 			add_action( 'init', array( $this, 'load_full_width_page_templates' ), 11 );
+			// Get the full-width pages feature
+			add_action( 'init', array( $this, 'load_site_import' ), 11 );
 			// Remove the blank template from the page template selector
 			add_filter( 'fwpt_templates_list', array( $this, 'filter_fwpt_templates_list' ) );
 			// Filter to add fetched.
@@ -58,7 +81,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		public function enqueue_template_dir_scripts() {
 			$current_screen = get_current_screen();
 			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' || $current_screen->id === 'sizzify_page_sizzify_template_dir' ) {
-				if( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
+				if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
 					$plugin_slug = 'obfx';
 				} else {
 					$plugin_slug = 'sizzify';
@@ -80,9 +103,9 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		}
 
 		/**
+		 * Get endpoint URL
 		 *
-		 *
-		 * @param string $path
+		 * @param string $path the endpoint path.
 		 *
 		 * @return string
 		 */
@@ -113,45 +136,45 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return false;
 			}
-			if( empty ( $_POST['plugin_slug'] ) ) {
+			if ( empty ( $_POST['plugin_slug'] ) ) {
 				return false;
 			}
 
 			$plugin_slug = $_POST['plugin_slug'];
-			$query_args    = array( 'license' => '', 'url' => get_home_url(), 'name' => $plugin_slug );
+			$query_args  = array( 'license' => '', 'url' => get_home_url(), 'name' => $plugin_slug );
 
-			$license = get_option('eaw_premium_license_data','');
+			$license = get_option( 'eaw_premium_license_data', '' );
 
-			if( ! empty ( $license ) ) {
-				$license= isset($license->key) ? $license->key :'';
+			if ( ! empty ( $license ) ) {
+				$license               = isset( $license->key ) ? $license->key : '';
 				$query_args['license'] = $license;
-				$query_args['_'] = time();
+				$query_args['_']       = time();
 			}
 			$url = add_query_arg( $query_args, 'https://themeisle.com/?edd_action=get_templates' );
 
-			$request = wp_remote_retrieve_body( wp_remote_post( esc_url_raw( $url ) ) );
+			$request  = wp_remote_retrieve_body( wp_remote_post( esc_url_raw( $url ) ) );
 			$response = json_decode( $request, true );
 
-			if( ! empty( $response ) ) {
+			if ( ! empty( $response ) ) {
 				update_option( $plugin_slug . '_synced_templates', $response );
 			}
 			die();
 		}
 
-		public function filter_templates($templates) {
+		public function filter_templates( $templates ) {
 			$current_screen = get_current_screen();
 			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
 				$fetched = get_option( 'obfx_synced_templates' );
 			} else {
 				$fetched = get_option( 'sizzify_synced_templates' );
 			}
-			if( empty( $fetched ) ) {
+			if ( empty( $fetched ) ) {
 				return $templates;
 			}
-			if( ! is_array( $fetched ) ) {
+			if ( ! is_array( $fetched ) ) {
 				return $templates;
 			}
-			$new_templates = array_merge( $templates,$fetched['templates'] );
+			$new_templates = array_merge( $templates, $fetched['templates'] );
 
 			return $new_templates;
 		}
@@ -284,7 +307,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function add_menu_page() {
 			$products = apply_filters( 'obfx_template_dir_products', array() );
-			foreach($products as $product){
+			foreach ( $products as $product ) {
 				add_submenu_page(
 					$product['parent_page_slug'], $product['directory_page_title'], __( 'Template Directory', 'textdomain' ), 'manage_options', $product['page_slug'],
 					array( $this, 'render_admin_page' )
@@ -472,7 +495,17 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function load_full_width_page_templates() {
 			if ( class_exists( '\ThemeIsle\FullWidthTemplates' ) ) {
-				\ThemeIsle\FullWidthTemplates::instance();
+				Full_Width_Templates::instance();
+			}
+		}
+
+		/**
+		 * Load site import module.
+		 */
+		public function load_site_import() {
+			require_once( plugin_dir_path( $this->get_dir() ) . $this->slug . '/site-import/class-site-import.php' );
+			if ( class_exists( '\ThemeIsle\Site_Import' ) ) {
+				Site_Import::instance();
 			}
 		}
 
@@ -500,7 +533,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * @access  protected
 		 *
 		 * @param   string $view_name The view name w/o the `-tpl.php` part.
-		 * @param   array $args An array of arguments to be passed to the view.
+		 * @param   array  $args      An array of arguments to be passed to the view.
 		 *
 		 * @return string
 		 */
@@ -532,7 +565,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 
 		/**
 		 * @static
-		 * @since 1.0.0
+		 * @since  1.0.0
 		 * @access public
 		 * @return PageTemplatesDirectory
 		 */
@@ -552,7 +585,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * object therefore, we don't want the object to be cloned.
 		 *
 		 * @access public
-		 * @since 1.0.0
+		 * @since  1.0.0
 		 * @return void
 		 */
 		public function __clone() {
@@ -564,7 +597,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * Disable unserializing of the class
 		 *
 		 * @access public
-		 * @since 1.0.0
+		 * @since  1.0.0
 		 * @return void
 		 */
 		public function __wakeup() {
