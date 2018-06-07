@@ -1,0 +1,14 @@
+{
+  "hestia-demo": {
+    "title": "Hestia Main Demo",
+    "demo_url": "https:\/\/demo.themeisle.com\/hestia-pro-demo-content\/hive-landing-page\/",
+    "screenshot": "https:\/\/raw.githubusercontent.com\/Codeinwp\/obfx-templates\/master\/placeholders\/hive-landing.png",
+    "recommended_plugins" : [ "elementor", "pirate-forms" ]
+  },
+  "hestia-demo-2": {
+    "title": "Hestia Main Demo",
+    "demo_url": "https:\/\/demo.themeisle.com\/hestia-pro-demo-content\/hive-landing-page\/",
+    "screenshot": "https:\/\/raw.githubusercontent.com\/Codeinwp\/obfx-templates\/master\/placeholders\/hive-landing.png",
+    "recommended_plugins" : [ "elementor", "pirate-forms" ]
+  }
+}

@@ -1,24 +1,36 @@
 <template>
 	<div class="wrap">
-		<div class="onboarder card">
-			<h2>Welcome to Hestia Pro</h2>
+		<Loader v-if="isLoading"></Loader>
+		<div v-else class="sites-library">
+			<div v-for="site in sites">
+				<SiteItem :site_data="site"></SiteItem>
+			</div>
 		</div>
+
 	</div>
 </template>
 
 <script>
+  import Loader from './loader.vue'
+  import SiteItem from './site-item.vue'
+
   module.exports = {
     name: 'app',
+    data () {
+      return {
+      }
+    },
     computed: {
-      mounted: function () {
+      isLoading: function () {
+        return this.$store.state.ajaxLoader;
       },
-      created () {
-      },
-      data: function () {
-        return {
-
-        }
-      },
+      sites: function () {
+        return this.$store.state.sitesData;
+      }
+    },
+    components: {
+      Loader,
+      SiteItem,
     },
   }
 </script>

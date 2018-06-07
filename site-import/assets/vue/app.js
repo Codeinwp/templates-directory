@@ -1,13 +1,19 @@
-import Vue from 'vue';
+/*jshint esversion: 6 */
 
+import Vue from 'vue';
 import App from './components/main.vue';
+import store from './models/sites-lib-store.js';
+
 
 window.onload = function () {
-  var siteslibrary = new Vue({
+  const siteslibrary = new Vue({
     el: '#ti-sites-library',
+    store,
     components: {
 	    App
     },
-    created () {}
+    created () {
+      store.dispatch( 'initializeLibrary', { req: 'Init Sites Library', data: { action: 'status'} });
+    }
   });
 };
