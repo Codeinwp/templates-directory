@@ -13,6 +13,8 @@ export default new Vuex.Store({
   state: {
     ajaxLoader: false,
     sitesData: null,
+    modalShown: false,
+    modalData: {},
     strings: themeisleSitesLibApi.i18ln,
   },
   mutations: {
@@ -22,6 +24,12 @@ export default new Vuex.Store({
     saveSitesData (state, data) {
       state.sitesData = data
     },
+    showModal( state, data ) {
+      state.modalShown = data
+    },
+    populateModalData( state, data ) {
+      state.modalData = data
+    }
   },
   actions: {
     initializeLibrary ({commit}, data) {

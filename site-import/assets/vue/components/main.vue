@@ -5,6 +5,7 @@
 			<div v-for="site in sites">
 				<SiteItem :site_data="site"></SiteItem>
 			</div>
+			<ImportModal v-if="modalShown"></ImportModal>
 		</div>
 
 	</div>
@@ -13,6 +14,7 @@
 <script>
   import Loader from './loader.vue'
   import SiteItem from './site-item.vue'
+  import ImportModal from './import-modal.vue'
 
   module.exports = {
     name: 'app',
@@ -26,11 +28,15 @@
       },
       sites: function () {
         return this.$store.state.sitesData;
+      },
+      modalShown: function () {
+        return this.$store.state.modalShown;
       }
     },
     components: {
       Loader,
       SiteItem,
+      ImportModal
     },
   }
 </script>

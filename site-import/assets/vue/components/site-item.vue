@@ -7,7 +7,7 @@
 		</div>
 		<div class="footer">
 			<h4>{{site_data.title}}</h4>
-			<button v-on:click="this.setupModal">{{this.$store.state.strings.preview_btn}}</button>
+			<button v-on:click="setupModal()">{{this.$store.state.strings.preview_btn}}</button>
 		</div>
 	</div>
 </template>
@@ -27,7 +27,9 @@
     },
     methods: {
       setupModal: function() {
-        console.log('click');
+        this.$store.commit( 'showModal', true );
+        this.$store.commit( 'populateModalData', this.site_data );
+        // console.log('click');
       }
     }
   }
