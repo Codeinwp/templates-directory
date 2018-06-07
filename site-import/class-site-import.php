@@ -111,7 +111,8 @@ if ( ! class_exists( '\ThemeIsle\Site_Import' ) ) {
 			}
 			$api['cachedSitesJSON'] = get_transient( $this->storage_transient );
 			$api['sitesJSON']       = plugin_dir_url( $this->get_dir() ) . 'assets/vue/models/data.json';
-			$api['i18ln'] = $this->get_strings();
+			$api['i18ln']           = $this->get_strings();
+			
 			return $api;
 		}
 		
@@ -121,24 +122,30 @@ if ( ! class_exists( '\ThemeIsle\Site_Import' ) ) {
 		private function get_strings() {
 			return array(
 				'preview_btn' => __( 'Preview', 'textdomain' ),
+				'import_btn'  => __( 'Import', 'textdomain' ),
 			);
 		}
 		
 		/**
 		 * Save sites listing that was fetched.
+		 *
+		 * @param \WP_REST_Request $request retrieve fetchable data.
+		 *
+		 * @return string.
 		 */
 		public function save_fetched_listing_handler( \WP_REST_Request $request ) {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return 'Not allowed.';
 			}
-			if ( empty( $_GET['data'] ) ) {
+			if ( empty( $request['data'] ) ) {
 				return 'No data sent.';
 			}
 			
-			set_transient( $this->storage_transient, $_GET['data'], 0.1 * MINUTE_IN_SECONDS );
+			set_transient( $this->storage_transient, $request['data'], 0.1 * MINUTE_IN_SECONDS );
 			
 			print_r( 'Saved JSON data.' );
-			return $_GET['data'];
+			
+			return $request['data'];
 		}
 		
 		/**
@@ -201,7 +208,7 @@ if ( ! class_exists( '\ThemeIsle\Site_Import' ) ) {
 		}
 		
 		/**
-		 * Disable unserializing of the class
+		 * Disable un-serializing of the class
 		 *
 		 * @access public
 		 * @since  1.0.0
