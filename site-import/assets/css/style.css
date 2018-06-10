@@ -1,5 +1,85 @@
-.sites-library {
+.ti-sites-lib {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(33%, 1fr));
-    grid-column-gap:  1%;
+    grid-template-columns: repeat(auto-fill, minmax(32%, 1fr));
+    grid-column-gap: 2%;
+}
+
+.ti-sites-lib__preview {
+    background: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    z-index: 10000;
+    height: 100vh;
+}
+
+.ti-sites-lib__preview iframe {
+    width: 100%;
+    height: auto;
+    border: none;
+    flex: 1;
+    overflow:hidden;
+}
+
+.preview-sidebar__container {
+    padding: 15px 50px;
+    display: flex;
+    align-items: center;
+}
+
+.ti-sites-lib .ellipsis {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.import-modal__wrapper {
+    position: fixed;
+    background: rgba( 0,0,0, 0.75 );
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.import-modal__wrapper .modal {
+    background: #fff;
+    width: auto;
+    max-width: 500px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+@media ( max-width: 1080px ) {
+    .ti-sites-lib {
+        grid-template-columns: repeat(auto-fill, minmax(49%, 1fr));
+        grid-column-gap: 2%;
+    }
+
+    .ti-sites-lib .site-box {
+        margin-bottom: 20px;
+    }
+}
+
+@media ( max-width: 768px ) {
+    .ti-sites-lib {
+        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+        grid-column-gap: 0;
+    }
+
+    .ti-sites-lib .site-box {
+        margin-bottom: 20px;
+    }
+    .ti-sites-lib .site-box img {
+        object-fit: cover;
+        width: 1000px;
+    }
 }

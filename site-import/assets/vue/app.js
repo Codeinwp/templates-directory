@@ -13,7 +13,7 @@ window.onload = function () {
 	    App
     },
     created () {
-      store.dispatch( 'initializeLibrary', { req: 'Init Sites Library', data: { action: 'status'} });
+      store.dispatch( 'initializeLibrary', { req: 'Init Sites Library', data: {} });
     }
   });
 };

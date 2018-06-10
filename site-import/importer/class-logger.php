@@ -1,5 +1,6 @@
 <?php
 
+namespace ThemeIsle;
 /**
  * Describes a logger instance
  *

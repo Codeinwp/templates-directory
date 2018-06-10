@@ -1,42 +1,38 @@
 <template>
-	<div class="wrap">
+	<div>
 		<Loader v-if="isLoading"></Loader>
-		<div v-else class="sites-library">
+
+		<div v-else class="ti-sites-lib">
 			<div v-for="site in sites">
 				<SiteItem :site_data="site"></SiteItem>
 			</div>
-			<ImportModal v-if="modalShown"></ImportModal>
+			<Preview v-if="previewOpen"></Preview>
 		</div>
-
 	</div>
 </template>
 
 <script>
   import Loader from './loader.vue'
   import SiteItem from './site-item.vue'
-  import ImportModal from './import-modal.vue'
+  import Preview from './preview.vue'
 
   module.exports = {
     name: 'app',
-    data () {
-      return {
-      }
-    },
     computed: {
       isLoading: function () {
-        return this.$store.state.ajaxLoader;
+        return this.$store.state.ajaxLoader
       },
       sites: function () {
-        return this.$store.state.sitesData;
+        return this.$store.state.sitesData
       },
-      modalShown: function () {
-        return this.$store.state.modalShown;
-      }
+      previewOpen: function () {
+        return this.$store.state.previewOpen
+      },
     },
     components: {
       Loader,
       SiteItem,
-      ImportModal
+      Preview,
     },
   }
 </script>

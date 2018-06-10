@@ -13,8 +13,9 @@ export default new Vuex.Store({
   state: {
     ajaxLoader: false,
     sitesData: null,
-    modalShown: false,
-    modalData: {},
+    previewOpen: false,
+    importModalState: false,
+    previewData: {},
     strings: themeisleSitesLibApi.i18ln,
   },
   mutations: {
@@ -24,12 +25,15 @@ export default new Vuex.Store({
     saveSitesData (state, data) {
       state.sitesData = data
     },
-    showModal( state, data ) {
-      state.modalShown = data
+    showPreview (state, data) {
+      state.previewOpen = data
     },
-    populateModalData( state, data ) {
-      state.modalData = data
-    }
+    showImportModal (state, data) {
+      state.importModalState = data
+    },
+    populatePreview (state, data) {
+      state.previewData = data
+    },
   },
   actions: {
     initializeLibrary ({commit}, data) {
@@ -44,18 +48,17 @@ export default new Vuex.Store({
           body: data.data,
           responseType: 'json',
         }).then(function (response) {
-          if (response.status === 200) {
+          if (response.ok) {
             commit('setAjaxState', false)
-            commit('saveSitesData', response.body )
+            commit('saveSitesData', response.body)
           }
-          let json = response.body
           Vue.http({
             url: themeisleSitesLibApi.root + '/save_fetched',
             method: 'POST',
             headers: {'X-WP-Nonce': themeisleSitesLibApi.nonce},
             params: {
               'req': data.req,
-              'data': json,
+              'data': response.body,
             },
           })
         })
@@ -65,5 +68,25 @@ export default new Vuex.Store({
         commit('saveSitesData', themeisleSitesLibApi.cachedSitesJSON)
       }
     },
-  }
+    importSite ({commit}, data) {
+      commit('setAjaxState', true)
+      console.log(data)
+      Vue.http({
+        url: themeisleSitesLibApi.root + '/install_plugins',
+        method: 'POST',
+        headers: {'X-WP-Nonce': themeisleSitesLibApi.nonce},
+        params: {
+          'req': data.req,
+        },
+        body: {
+          'data': data.plugins,
+        },
+        responseType: 'json',
+      }).then(function (response) {
+        commit('setAjaxState', false)
+        console.log('plugins installed.')
+        console.log(response)
+      })
+    },
+  },
 })

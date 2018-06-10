@@ -1,4 +1,5 @@
 <?php
+namespace ThemeIsle;
 
 class WXR_Import_UI {
 	/**

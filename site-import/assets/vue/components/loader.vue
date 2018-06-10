@@ -39,7 +39,7 @@
 		margin: 0 auto;
 		width: 15%;
 		height: 15%;
-		background-color: #333;
+		background-color: #0085ba;
 		border-radius: 100%;
 		-webkit-animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
 		animation: sk-circleFadeDelay 1.2s infinite ease-in-out both; }

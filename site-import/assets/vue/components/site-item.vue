@@ -1,13 +1,11 @@
 <template>
 	<div class="site-box">
-		{{site_data}}
-
-		<div class="header">
+		<div class="preview-image">
 		<img :src="site_data.screenshot" alt="">
 		</div>
 		<div class="footer">
 			<h4>{{site_data.title}}</h4>
-			<button v-on:click="setupModal()">{{this.$store.state.strings.preview_btn}}</button>
+			<button class="button button-secondary" v-on:click="setupPreview()">{{this.$store.state.strings.preview_btn}}</button>
 		</div>
 	</div>
 </template>
@@ -26,15 +24,36 @@
       }
     },
     methods: {
-      setupModal: function() {
-        this.$store.commit( 'showModal', true );
-        this.$store.commit( 'populateModalData', this.site_data );
-        // console.log('click');
+      setupPreview: function() {
+        this.$store.commit( 'showPreview', true );
+        this.$store.commit( 'populatePreview', this.site_data );
       }
     }
   }
 </script>
 
 <style scoped>
-
+	h4 {
+		display: block;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		margin: 0;
+		overflow: hidden;
+		max-width: 70%;
+		font-size: 15px;
+	}
+	.site-box {
+		border: 1px solid #ccc;
+	}
+	.footer {
+		border-top: 1px solid #ccc;
+		display: flex;
+		padding: 5px 10px;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+	button.button-secondary.button {
+		align-self: flex-end;
+		margin-left: auto;
+	}
 </style>

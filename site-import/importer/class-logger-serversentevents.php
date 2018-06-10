@@ -1,4 +1,5 @@
 <?php
+namespace ThemeIsle;
 
 class WP_Importer_Logger_ServerSentEvents extends WP_Importer_Logger {
 	/**

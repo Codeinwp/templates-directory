@@ -1,6 +1,7 @@
 <?php
+namespace ThemeIsle;
 
-class WXR_Importer extends WP_Importer {
+class WXR_Importer extends \WP_Importer {
 	/**
 	 * Maximum supported WXR version
 	 */
