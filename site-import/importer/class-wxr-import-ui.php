@@ -1,7 +1,6 @@
 <?php
-namespace ThemeIsle;
 
-class WXR_Import_UI {
+class ThemeIsle_WXR_Import_UI {
 	/**
 	 * Should we fetch attachments?
 	 *

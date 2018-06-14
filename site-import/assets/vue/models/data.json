@@ -8,17 +8,16 @@
       "Elementor": "elementor",
       "Pirate Forms": "pirate-forms",
       "Intergeo Maps" : "intergeo-maps",
-      "WooCommerce": "WooCommerce"
-    }
+      "WooCommerce": "woocommerce"
+    },
+    "content_file": "http://localhost/imma/wp-content/uploads/2018/content.xml"
   },
   "hestia-demo-2": {
     "title": "Hestia Demo Content With A Very Very Very Very Very Very Very Very Very Very Very Very Very Very Long Name",
     "demo_url": "https:\/\/demo.themeisle.com\/hestia-pro-demo-content",
     "screenshot": "https:\/\/raw.githubusercontent.com\/Codeinwp\/obfx-templates\/master\/placeholders\/hive-landing.png",
-    "recommended_plugins": [
-      "elementor",
-      "pirate-forms"
-    ]
+    "recommended_plugins": {},
+    "content_file": "http://localhost/imma/wp-content/uploads/2018/hestiapro.xml"
   },
   "hestia-demo-3": {
     "title": "Hestia Lite Demo",

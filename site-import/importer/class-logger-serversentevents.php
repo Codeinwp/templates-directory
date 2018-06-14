@@ -1,7 +1,6 @@
 <?php
-namespace ThemeIsle;
 
-class WP_Importer_Logger_ServerSentEvents extends WP_Importer_Logger {
+class ThemeIsle_WP_Importer_Logger_ServerSentEvents extends WP_Importer_Logger {
 	/**
 	 * Logs with an arbitrary level.
 	 *

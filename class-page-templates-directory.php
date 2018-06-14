@@ -7,7 +7,6 @@
 
 namespace ThemeIsle;
 
-use \Themeisle\Site_Import as Site_Import;
 use \ThemeIsle\FullWidthTemplates as Full_Width_Templates;
 
 if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
@@ -504,8 +503,8 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function load_site_import() {
 			require_once( plugin_dir_path( $this->get_dir() ) . $this->slug . '/site-import/class-site-import.php' );
-			if ( class_exists( '\ThemeIsle\Site_Import' ) ) {
-				Site_Import::instance();
+			if ( class_exists( 'ThemeIsle_Site_Import' ) ) {
+				\ThemeIsle_Site_Import::instance();
 			}
 		}
 

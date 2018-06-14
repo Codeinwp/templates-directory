@@ -10,8 +10,12 @@
 			</div>
 			<hr>
 			<div class="modal__footer">
-				<button class="button button-secondary" v-on:click="closeModal">{{this.$store.state.strings.cancel_btn}}</button>
-				<button class="button button-primary" v-on:click="startImport">{{this.$store.state.strings.import_btn}}</button>
+				<button class="button button-secondary" v-on:click="closeModal">
+					{{this.$store.state.strings.cancel_btn}}
+				</button>
+				<button class="button button-primary" v-on:click="startImport">
+					{{this.$store.state.strings.import_btn}}
+				</button>
 			</div>
 		</div>
 	</div>
@@ -28,29 +32,36 @@
       },
     },
     methods: {
-      closeModal: function() {
-        this.$store.commit('showImportModal', false);
+      closeModal: function () {
+        this.$store.commit('showImportModal', false)
       },
-      startImport: function() {
-        this.$store.dispatch( 'importSite', { req: 'Import Site', plugins: this.$store.state.previewData.recommended_plugins } );
-        },
+      startImport: function () {
+        this.$store.dispatch('importSite', {
+          req: 'Import Site',
+          plugins: this.$store.state.previewData.recommended_plugins,
+          content: this.$store.state.previewData.content_file,
+        })
+      },
     },
     directives: {
-      onClickaway
-    }
+      onClickaway,
+    },
   }
 </script>
 
 <style scoped>
 	.modal__header .title {
-		margin :0;
+		margin: 0;
 	}
+
 	.modal__header {
 		padding: 10px;
 	}
+
 	.modal__content {
 		padding: 10px;
 	}
+
 	.modal__footer {
 		padding: 10px;
 		text-align: right;

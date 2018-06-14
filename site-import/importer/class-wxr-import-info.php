@@ -1,7 +1,6 @@
 <?php
-namespace ThemeIsle;
 
-class WXR_Import_Info {
+class ThemeIsle_WXR_Import_Info {
 	public $home;
 	public $siteurl;
 

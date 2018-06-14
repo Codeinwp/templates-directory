@@ -1,6 +1,5 @@
 <?php
 
-namespace ThemeIsle;
 /**
  * Describes a logger instance
  *
@@ -18,7 +17,7 @@ namespace ThemeIsle;
  * See https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md
  * for the full interface specification.
  */
-class WP_Importer_Logger {
+class ThemeIsle_Importer_Logger {
 	/**
 	 * System is unusable.
 	 *

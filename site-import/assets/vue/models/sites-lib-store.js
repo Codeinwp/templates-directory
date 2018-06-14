@@ -51,6 +51,7 @@ export default new Vuex.Store({
           if (response.ok) {
             commit('setAjaxState', false)
             commit('saveSitesData', response.body)
+            console.log(response);
           }
           Vue.http({
             url: themeisleSitesLibApi.root + '/save_fetched',
@@ -79,13 +80,26 @@ export default new Vuex.Store({
           'req': data.req,
         },
         body: {
-          'data': data.plugins,
+          'data': data.content,
         },
         responseType: 'json',
       }).then(function (response) {
-        commit('setAjaxState', false)
         console.log('plugins installed.')
-        console.log(response)
+        Vue.http({
+          url: themeisleSitesLibApi.root + '/import_content',
+          method: 'POST',
+          headers: {'X-WP-Nonce': themeisleSitesLibApi.nonce},
+          params: {
+            'req': data.req,
+          },
+          body: {
+            'data': data.content,
+          },
+          responseType: 'json',
+        }).then(function (response) {
+           commit('setAjaxState', false)
+          console.log( response );
+        });
       })
     },
   },
