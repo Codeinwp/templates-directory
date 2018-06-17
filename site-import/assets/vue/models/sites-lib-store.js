@@ -51,7 +51,7 @@ export default new Vuex.Store({
           if (response.ok) {
             commit('setAjaxState', false)
             commit('saveSitesData', response.body)
-            console.log(response);
+            console.log(response)
           }
           Vue.http({
             url: themeisleSitesLibApi.root + '/save_fetched',
@@ -83,7 +83,7 @@ export default new Vuex.Store({
           'data': data.content,
         },
         responseType: 'json',
-      }).then(function (response) {
+      }).then(function () {
         console.log('plugins installed.')
         Vue.http({
           url: themeisleSitesLibApi.root + '/import_content',
@@ -97,9 +97,25 @@ export default new Vuex.Store({
           },
           responseType: 'json',
         }).then(function (response) {
-           commit('setAjaxState', false)
-          console.log( response );
-        });
+          commit('setAjaxState', false)
+          console.log('imported content.')
+          Vue.http({
+            url: themeisleSitesLibApi.root + '/import_theme_mods',
+            method: 'POST',
+            headers: {'X-WP-Nonce': themeisleSitesLibApi.nonce},
+            params: {
+              'req': data.req,
+            },
+            body: {
+              'data': data.themeMods,
+            },
+            responseType: 'json',
+          }).then(function (response) {
+            console.log('imported theme mods.')
+            commit('setAjaxState', false)
+            console.log(response)
+          })
+        })
       })
     },
   },

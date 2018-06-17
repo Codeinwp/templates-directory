@@ -10,7 +10,8 @@
       "Intergeo Maps" : "intergeo-maps",
       "WooCommerce": "woocommerce"
     },
-    "content_file": "http://localhost/imma/wp-content/uploads/2018/content.xml"
+    "content_file": "http://localhost/imma/wp-content/uploads/2018/hestiaprodemocontent.xml",
+    "theme_mods": "https://demo.themeisle.com/hestia-pro-demo-content/wp-json/demodata/v1/data"
   },
   "hestia-demo-2": {
     "title": "Hestia Demo Content With A Very Very Very Very Very Very Very Very Very Very Very Very Very Very Long Name",

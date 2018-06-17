@@ -111,6 +111,12 @@ class ThemeIsle_Site_Import {
 				'callback' => array( $this, 'import_remote_xml' ),
 			)
 		);
+		register_rest_route( $this->api_root, '/import_theme_mods',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'import_theme_mods' ),
+			)
+		);
 	}
 	
 	/**
@@ -325,22 +331,53 @@ class ThemeIsle_Site_Import {
 	 * Import Remote XML file.
 	 */
 	public function import_remote_xml( \WP_REST_Request $request ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'Not allowed to import content.' );
+		}
+
 		$params           = $request->get_json_params();
 		$content_file_url = $params['data'];
+
+		if( empty( $content_file_url ) ) {
+			wp_send_json_error( 'No content to import.' );
+		}
+
 		set_time_limit( 10000 );
+
 		require_once( ABSPATH . 'wp-admin/includes/file.php' );
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+		require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
 		$logger       = new \ThemeIsle_Importer_Logger();
 		$content_file = \download_url( esc_url( $content_file_url ) );
 		$importer     = new \ThemeIsle_WXR_Importer();
 		$importer->set_logger( $logger );
 		$result = $importer->import( $content_file );
-		
+
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( 'Could not import content.' );
 		}
 		unlink( $content_file );
 		print_r( 'Content imported.' );
+
+		$this->maybe_bust_elementor_cache();
+		die();
+	}
+	
+	private function maybe_bust_elementor_cache() {
+		if( class_exists( 'Elementor' ) ) {
+			Elementor\Plugin::$instance->posts_css_manager->clear_cache();
+		}
+	}
+	
+	public function import_theme_mods( \WP_REST_Request $request ) {
+		$params           = $request->get_json_params();
+		$theme_mods_url = $params['data'];
+		$theme_mods = wp_remote_get( $theme_mods_url );
+		if( empty ( $theme_mods['body'] ) ) {
+			wp_send_json_error( 'No theme mods to import.' );
+		}
+		print_r( $theme_mods['body'] );
 		die();
 	}
 	

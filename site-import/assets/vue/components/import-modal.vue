@@ -40,6 +40,7 @@
           req: 'Import Site',
           plugins: this.$store.state.previewData.recommended_plugins,
           content: this.$store.state.previewData.content_file,
+          themeMods: this.$store.state.previewData.theme_mods,
         })
       },
     },
