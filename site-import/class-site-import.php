@@ -17,30 +17,30 @@ class ThemeIsle_Site_Import {
 	 * @var Site_Import
 	 */
 	protected static $instance = null;
-	
+
 	/**
 	 * The version of this library
 	 *
 	 * @var string
 	 */
 	public $version = '1.0.0';
-	
+
 	/**
 	 * Sites Library API URL.
 	 *
-	 * @since 1.0.0
+	 * @since  1.0.0
 	 * @access private
 	 * @var null | string
 	 */
 	private $api_root = null;
-	
+
 	/**
 	 * Holds the sites data.
 	 *
 	 * @var null
 	 */
 	private $storage_transient = null;
-	
+
 	/**
 	 * Initialize the Site_Import.
 	 */
@@ -48,17 +48,17 @@ class ThemeIsle_Site_Import {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		
+
 		$theme_support = get_theme_support( 'themeisle-demo-import' );
-		
+
 		if ( empty( $theme_support ) ) {
 			return;
 		}
-		
+
 		$this->load_importer();
 		$this->storage_transient = 'themeisle_sites_library_data';
 		$this->api_root          = 'ti-sites-lib/v1';
-		
+
 		// Initialize Endpoints.
 		add_action( 'rest_api_init', array( $this, 'register_endpoints' ) );
 		// Add tab and content on about page.
@@ -67,17 +67,17 @@ class ThemeIsle_Site_Import {
 		// Add shortcode to display site library.
 		add_shortcode( 'themeisle_site_library', array( $this, 'render_site_library' ) );
 	}
-	
+
 	/**
 	 * Add about page tab list item.
 	 */
 	public function add_demo_import_tab() { ?>
 		<li style="margin-bottom: 0;" data-tab-id="<?php echo esc_attr( 'demo-import' ); ?>"><a class="nav-tab"
-		                                                                                        href="#<?php echo esc_attr( 'demo-import' ); ?>"><?php echo wp_kses_post( esc_html__( 'Demo Import', 'textdomain' ) ); ?></a>
+					href="#<?php echo esc_attr( 'demo-import' ); ?>"><?php echo wp_kses_post( esc_html__( 'Demo Import', 'textdomain' ) ); ?></a>
 		</li>
 		<?php
 	}
-	
+
 	/**
 	 * Add about page tab content.
 	 */
@@ -87,8 +87,8 @@ class ThemeIsle_Site_Import {
 		</div>
 		<?php
 	}
-	
-	
+
+
 	/**
 	 * Register endpoints.
 	 */
@@ -118,7 +118,7 @@ class ThemeIsle_Site_Import {
 			)
 		);
 	}
-	
+
 	/**
 	 * Render the sites library.
 	 */
@@ -133,20 +133,20 @@ class ThemeIsle_Site_Import {
 		</div>
 		<?php
 	}
-	
+
 	/**
 	 * Enqueue Scripts.
 	 */
 	public function enqueue() {
 		wp_register_script( 'themeisle-site-lib', plugin_dir_url( $this->get_dir() ) . '/assets/js/bundle.js', array(), $this->version, true );
-		
+
 		wp_localize_script( 'themeisle-site-lib', 'themeisleSitesLibApi', $this->localize_sites_library() );
-		
+
 		wp_enqueue_script( 'themeisle-site-lib' );
-		
+
 		wp_enqueue_style( 'themeisle-site-lib', plugin_dir_url( $this->get_dir() ) . '/assets/css/style.css', array(), $this->version );
 	}
-	
+
 	/**
 	 * Localize the sites library.
 	 *
@@ -165,10 +165,10 @@ class ThemeIsle_Site_Import {
 		$api['cachedSitesJSON'] = get_transient( $this->storage_transient );
 		$api['sitesJSON']       = plugin_dir_url( $this->get_dir() ) . 'assets/vue/models/data.json';
 		$api['i18ln']           = $this->get_strings();
-		
+
 		return $api;
 	}
-	
+
 	/**
 	 * Get module strings.
 	 *
@@ -181,21 +181,28 @@ class ThemeIsle_Site_Import {
 			'cancel_btn'  => __( 'Cancel', 'textdomain' ),
 		);
 	}
-	
+
+	/**
+	 * Install required plugins.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return void|WP_REST_Response
+	 */
 	public function install_plugins( \WP_REST_Request $request ) {
 		if ( ! current_user_can( 'install_plugins' ) ) {
 			wp_send_json_error( 'Sorry, you are not allowed to install plugins on this site.' );
 		}
-		
+
 		$params  = $request->get_json_params();
 		$plugins = $params['data'];
-		
+
 		if ( empty( $plugins ) || ! is_array( $plugins ) ) {
-			return rest_ensure_response( 'No plugins to install.' );
+			rest_ensure_response( 'No plugins to install.' );
 		}
 		$active_plugins = get_option( 'active_plugins' );
-		
-		foreach ( $plugins as $plugin_nicename => $plugin_slug ) {
+
+		foreach ( $plugins as $plugin_slug ) {
 			if ( in_array( $plugin_slug, $active_plugins ) ) {
 				print_r( 'Plugin is already active' );
 				continue;
@@ -205,7 +212,7 @@ class ThemeIsle_Site_Import {
 		}
 		die();
 	}
-	
+
 	/**
 	 * Install a single plugin
 	 *
@@ -213,17 +220,17 @@ class ThemeIsle_Site_Import {
 	 */
 	private function install_single_plugin( $plugin_slug ) {
 		$plugin_dir = WP_PLUGIN_DIR . '/' . $plugin_slug;
-		
+
 		if ( is_dir( $plugin_dir ) ) {
 			return;
 		}
-		
+
 		require_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 		require_once( ABSPATH . 'wp-admin/includes/file.php' );
 		require_once( ABSPATH . 'wp-admin/includes/misc.php' );
 		require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 		require_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
-		
+
 		$api = plugins_api(
 			'plugin_information',
 			array(
@@ -244,17 +251,16 @@ class ThemeIsle_Site_Import {
 				),
 			)
 		);
-		
+
 		$skin     = new \Plugin_Installer_Skin( array( 'api' => $api ) );
 		$upgrader = new \Plugin_Upgrader( $skin );
 		$install  = $upgrader->install( $api->download_link );
 		if ( $install !== true ) {
 			print_r( 'Error: Install process failed (' . $plugin_slug . '). var_dump of result follows.<br>' . '\n' );
-			var_dump( $install );
 		}
-		print_r( 'Installed ' . $plugin_slug . '<br>' );
+		print_r( 'Installed ' . $plugin_slug );
 	}
-	
+
 	/**
 	 * Activate a single plugin
 	 *
@@ -262,7 +268,7 @@ class ThemeIsle_Site_Import {
 	 */
 	private function activate_single_plugin( $plugin_slug ) {
 		$plugin_dir = WP_PLUGIN_DIR . '/' . $plugin_slug;
-		
+
 		$plugin_path  = $plugin_dir . '/' . $plugin_slug . '.php';
 		$plugin_entry = $plugin_slug . '/' . $plugin_slug . '.php';
 		if ( ! file_exists( $plugin_path ) ) {
@@ -271,25 +277,25 @@ class ThemeIsle_Site_Import {
 		}
 		if ( ! file_exists( $plugin_path ) ) {
 			print_r( 'No plugin under that directory.' );
-			
+
 			return;
 		}
-		
+
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-		
+
 		if ( is_plugin_active( $plugin_entry ) ) {
 			print_r( $plugin_slug . ' already active.' );
-			
+
 			return;
 		}
 		$this->maybe_provide_activation_help( $plugin_slug, $plugin_dir );
-		
+
 		activate_plugin( $plugin_path );
 		print_r( 'Activated ' . $plugin_slug . '.' );
-		
+
 		return;
 	}
-	
+
 	/**
 	 * Take care of plugins that are "speshul".
 	 *
@@ -301,7 +307,7 @@ class ThemeIsle_Site_Import {
 			require_once( $path . '/includes/admin/wc-admin-functions.php' );
 		}
 	}
-	
+
 	/**
 	 * Save sites listing that was fetched.
 	 *
@@ -313,20 +319,20 @@ class ThemeIsle_Site_Import {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( 'Not allowed.' );
 		}
-		
+
 		$params = $request->get_params();
-		
+
 		if ( empty( $params['data'] ) ) {
 			wp_send_json_error( 'No data sent.' );
 		}
-		
+
 		set_transient( $this->storage_transient, $params['data'], 0.1 * MINUTE_IN_SECONDS );
-		
+
 		print_r( 'Saved JSON data.' );
-		
+
 		return $params['data'];
 	}
-	
+
 	/*
 	 * Import Remote XML file.
 	 */
@@ -338,7 +344,7 @@ class ThemeIsle_Site_Import {
 		$params           = $request->get_json_params();
 		$content_file_url = $params['data'];
 
-		if( empty( $content_file_url ) ) {
+		if ( empty( $content_file_url ) ) {
 			wp_send_json_error( 'No content to import.' );
 		}
 
@@ -363,25 +369,25 @@ class ThemeIsle_Site_Import {
 		$this->maybe_bust_elementor_cache();
 		die();
 	}
-	
+
 	private function maybe_bust_elementor_cache() {
-		if( class_exists( 'Elementor' ) ) {
+		if ( class_exists( 'Elementor' ) ) {
 			Elementor\Plugin::$instance->posts_css_manager->clear_cache();
 		}
 	}
-	
+
 	public function import_theme_mods( \WP_REST_Request $request ) {
-		$params           = $request->get_json_params();
+		$params         = $request->get_json_params();
 		$theme_mods_url = $params['data'];
-		$theme_mods = wp_remote_get( $theme_mods_url );
-		if( empty ( $theme_mods['body'] ) ) {
+		$theme_mods     = wp_remote_get( $theme_mods_url );
+		if ( empty ( $theme_mods['body'] ) ) {
 			wp_send_json_error( 'No theme mods to import.' );
 		}
 		print_r( $theme_mods['body'] );
 		die();
 	}
-	
-	
+
+
 	/**
 	 * Load the importer.
 	 */
@@ -396,7 +402,7 @@ class ThemeIsle_Site_Import {
 		require dirname( __FILE__ ) . '/importer/class-wxr-import-info.php';
 		require dirname( __FILE__ ) . '/importer/class-wxr-import-ui.php';
 	}
-	
+
 	/**
 	 * Method to return path to child class in a Reflective Way.
 	 *
@@ -407,7 +413,7 @@ class ThemeIsle_Site_Import {
 	private function get_dir() {
 		return dirname( __FILE__ ) . '/site-import';
 	}
-	
+
 	/**
 	 * Instantiate the class.
 	 *
@@ -421,10 +427,10 @@ class ThemeIsle_Site_Import {
 			self::$instance = new self();
 			self::$instance->init();
 		}
-		
+
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Disallow object clone
 	 *
@@ -435,7 +441,7 @@ class ThemeIsle_Site_Import {
 	public function __clone() {
 		_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'textdomain' ), '1.0.0' );
 	}
-	
+
 	/**
 	 * Disable un-serializing
 	 *
