@@ -522,7 +522,7 @@ class ThemeIsle_WXR_Import_UI {
 	 */
 	protected function get_importer() {
 		$importer = new WXR_Importer( $this->get_import_options() );
-		$logger = new WP_Importer_Logger_ServerSentEvents();
+		$logger = new ThemeIsle_WP_Importer_Logger_ServerSentEvents();
 		$importer->set_logger( $logger );
 
 		return $importer;
