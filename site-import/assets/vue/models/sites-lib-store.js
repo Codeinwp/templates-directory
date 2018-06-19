@@ -38,10 +38,9 @@ export default new Vuex.Store({
   actions: {
     initializeLibrary ({commit}, data) {
       commit('setAjaxState', true)
-      if (!themeisleSitesLibApi.cachedSitesJSON) {
-        console.log('Refetching sites.')
+        console.log('Fetching sites.')
         Vue.http({
-          url: themeisleSitesLibApi.sitesJSON,
+          url: themeisleSitesLibApi.root + '/initialize_sites_library',
           method: 'GET',
           headers: {'X-WP-Nonce': themeisleSitesLibApi.nonce},
           params: {'req': data.req},
@@ -53,21 +52,7 @@ export default new Vuex.Store({
             commit('saveSitesData', response.body)
             console.log(response)
           }
-          Vue.http({
-            url: themeisleSitesLibApi.root + '/save_fetched',
-            method: 'POST',
-            headers: {'X-WP-Nonce': themeisleSitesLibApi.nonce},
-            params: {
-              'req': data.req,
-              'data': response.body,
-            },
-          })
         })
-      } else {
-        console.log('Loading from cache.')
-        commit('setAjaxState', false)
-        commit('saveSitesData', themeisleSitesLibApi.cachedSitesJSON)
-      }
     },
     importSite ({commit}, data) {
       commit('setAjaxState', true)

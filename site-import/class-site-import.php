@@ -41,6 +41,10 @@ class ThemeIsle_Site_Import {
 	 */
 	private $storage_transient = null;
 	
+	private $sites = array();
+	
+	private $endpoint_suffix = '/wp-json/ti-demo-data/data';
+	
 	/**
 	 * Initialize the Site_Import.
 	 */
@@ -56,6 +60,7 @@ class ThemeIsle_Site_Import {
 		}
 		
 		$this->load_importer();
+		$this->sites             = $theme_support[0];
 		$this->storage_transient = 'themeisle_sites_library_data';
 		$this->api_root          = 'ti-sites-lib/v1';
 		
@@ -69,30 +74,15 @@ class ThemeIsle_Site_Import {
 	}
 	
 	/**
-	 * Add about page tab list item.
-	 */
-	public function add_demo_import_tab() { ?>
-		<li style="margin-bottom: 0;" data-tab-id="<?php echo esc_attr( 'demo-import' ); ?>"><a class="nav-tab"
-		                                                                                        href="#<?php echo esc_attr( 'demo-import' ); ?>"><?php echo wp_kses_post( esc_html__( 'Demo Import', 'textdomain' ) ); ?></a>
-		</li>
-		<?php
-	}
-	
-	/**
-	 * Add about page tab content.
-	 */
-	public function add_demo_import_tab_content() { ?>
-		<div id="<?php echo esc_attr( 'demo-import' ); ?>">
-			<?php do_shortcode( '[themeisle_site_library]' ); ?>
-		</div>
-		<?php
-	}
-	
-	
-	/**
 	 * Register endpoints.
 	 */
 	public function register_endpoints() {
+		register_rest_route( $this->api_root, '/initialize_sites_library',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'init_library' ),
+			)
+		);
 		register_rest_route( $this->api_root, '/save_fetched',
 			array(
 				'methods'  => 'POST',
@@ -162,12 +152,53 @@ class ThemeIsle_Site_Import {
 				'nonce' => wp_create_nonce( 'wp_rest' ),
 			);
 		}
-		$api['cachedSitesJSON'] = get_transient( $this->storage_transient );
-		$api['sitesJSON']       = plugin_dir_url( $this->get_dir() ) . 'assets/vue/models/data.json';
-		$api['i18ln']           = $this->get_strings();
+		$api['i18ln']       = $this->get_strings();
+		$api['cachedSites'] = get_transient( $this->storage_transient );
 		
 		return $api;
 	}
+	
+	/**
+	 * Initialize Library
+	 *
+	 * @return array
+	 */
+	public function init_library() {
+		$cached = get_transient( $this->storage_transient );
+		
+		if ( ! empty( $cached ) ) {
+			return $cached;
+		}
+		
+		if ( empty( $this->sites ) ) {
+			return array();
+		}
+		
+		if ( ! is_array( $this->sites ) ) {
+			return array();
+		}
+		
+		$data = array();
+		
+		foreach ( $this->sites as $slug => $args ) {
+			
+			$request = wp_remote_get( $args['url'] . $this->endpoint_suffix );
+			
+			if ( empty( $request['body'] ) || ! isset( $request['body'] ) ) {
+				continue;
+			}
+			
+			$data[ $slug ]               = json_decode( $request['body'], true );
+			$data[ $slug ]['screenshot'] = $args['screenshot'];
+			$data[ $slug ]['demo_url']   = $args['url'];
+			$data[ $slug ]['title']      = $args['title'];
+		}
+		
+		set_transient( $this->storage_transient, $data, 0.1 * MINUTE_IN_SECONDS );
+		
+		return $data;
+	}
+	
 	
 	/**
 	 * Get module strings.
@@ -302,31 +333,6 @@ class ThemeIsle_Site_Import {
 		}
 	}
 	
-	/**
-	 * Save sites listing that was fetched.
-	 *
-	 * @param \WP_REST_Request $request retrieve fetchable data.
-	 *
-	 * @return string.
-	 */
-	public function save_fetched_listing_handler( \WP_REST_Request $request ) {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( 'Not allowed.' );
-		}
-		
-		$params = $request->get_params();
-		
-		if ( empty( $params['data'] ) ) {
-			wp_send_json_error( 'No data sent.' );
-		}
-		
-		set_transient( $this->storage_transient, $params['data'], 0.1 * MINUTE_IN_SECONDS );
-		
-		print_r( 'Saved JSON data.' );
-		
-		return $params['data'];
-	}
-	
 	/*
 	 * Import Remote XML file.
 	 */
@@ -334,47 +340,47 @@ class ThemeIsle_Site_Import {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( 'Not allowed to import content.' );
 		}
-
+		
 		$params           = $request->get_json_params();
 		$content_file_url = $params['data'];
-
-		if( empty( $content_file_url ) ) {
+		
+		if ( empty( $content_file_url ) ) {
 			wp_send_json_error( 'No content to import.' );
 		}
-
+		
 		set_time_limit( 10000 );
-
+		
 		require_once( ABSPATH . 'wp-admin/includes/file.php' );
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
 		require_once( ABSPATH . 'wp-admin/includes/media.php' );
-
+		
 		$logger       = new \ThemeIsle_Importer_Logger();
 		$content_file = \download_url( esc_url( $content_file_url ) );
 		$importer     = new \ThemeIsle_WXR_Importer();
 		$importer->set_logger( $logger );
 		$result = $importer->import( $content_file );
-
+		
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( 'Could not import content.' );
 		}
 		unlink( $content_file );
 		print_r( 'Content imported.' );
-
+		
 		$this->maybe_bust_elementor_cache();
 		die();
 	}
 	
 	private function maybe_bust_elementor_cache() {
-		if( class_exists( 'Elementor' ) ) {
+		if ( class_exists( 'Elementor' ) ) {
 			Elementor\Plugin::$instance->posts_css_manager->clear_cache();
 		}
 	}
 	
 	public function import_theme_mods( \WP_REST_Request $request ) {
-		$params           = $request->get_json_params();
+		$params         = $request->get_json_params();
 		$theme_mods_url = $params['data'];
-		$theme_mods = wp_remote_get( $theme_mods_url );
-		if( empty ( $theme_mods['body'] ) ) {
+		$theme_mods     = wp_remote_get( $theme_mods_url );
+		if ( empty ( $theme_mods['body'] ) ) {
 			wp_send_json_error( 'No theme mods to import.' );
 		}
 		print_r( $theme_mods['body'] );
@@ -414,7 +420,7 @@ class ThemeIsle_Site_Import {
 	 * @static
 	 * @since  1.0.0
 	 * @access public
-	 * @return Site_Import
+	 * @return \ThemeIsle_Site_Import
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -445,5 +451,25 @@ class ThemeIsle_Site_Import {
 	 */
 	public function __wakeup() {
 		_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'textdomain' ), '1.0.0' );
+	}
+	
+	/**
+	 * Add about page tab list item.
+	 */
+	public function add_demo_import_tab() { ?>
+		<li style="margin-bottom: 0;" data-tab-id="<?php echo esc_attr( 'demo-import' ); ?>"><a class="nav-tab"
+		                                                                                        href="#<?php echo esc_attr( 'demo-import' ); ?>"><?php echo wp_kses_post( esc_html__( 'Demo Import', 'textdomain' ) ); ?></a>
+		</li>
+		<?php
+	}
+	
+	/**
+	 * Add about page tab content.
+	 */
+	public function add_demo_import_tab_content() { ?>
+		<div id="<?php echo esc_attr( 'demo-import' ); ?>">
+			<?php do_shortcode( '[themeisle_site_library]' ); ?>
+		</div>
+		<?php
 	}
 }

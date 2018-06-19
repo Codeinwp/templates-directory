@@ -12863,36 +12863,21 @@ exports.default = new _vuex2.default.Store({
       var commit = _ref.commit;
 
       commit('setAjaxState', true);
-      if (!themeisleSitesLibApi.cachedSitesJSON) {
-        console.log('Refetching sites.');
-        _vue2.default.http({
-          url: themeisleSitesLibApi.sitesJSON,
-          method: 'GET',
-          headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
-          params: { 'req': data.req },
-          body: data.data,
-          responseType: 'json'
-        }).then(function (response) {
-          if (response.ok) {
-            commit('setAjaxState', false);
-            commit('saveSitesData', response.body);
-            console.log(response);
-          }
-          _vue2.default.http({
-            url: themeisleSitesLibApi.root + '/save_fetched',
-            method: 'POST',
-            headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
-            params: {
-              'req': data.req,
-              'data': response.body
-            }
-          });
-        });
-      } else {
-        console.log('Loading from cache.');
-        commit('setAjaxState', false);
-        commit('saveSitesData', themeisleSitesLibApi.cachedSitesJSON);
-      }
+      console.log('Fetching sites.');
+      _vue2.default.http({
+        url: themeisleSitesLibApi.root + '/initialize_sites_library',
+        method: 'GET',
+        headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
+        params: { 'req': data.req },
+        body: data.data,
+        responseType: 'json'
+      }).then(function (response) {
+        if (response.ok) {
+          commit('setAjaxState', false);
+          commit('saveSitesData', response.body);
+          console.log(response);
+        }
+      });
     },
     importSite: function importSite(_ref2, data) {
       var commit = _ref2.commit;
