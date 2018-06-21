@@ -2,7 +2,7 @@
 
 import Vue from 'vue';
 import App from './components/main.vue';
-import store from './models/sites-lib-store.js';
+import store from './store/store.js';
 
 
 window.onload = function () {
@@ -13,7 +13,7 @@ window.onload = function () {
 	    App
     },
     created () {
-      store.dispatch( 'initializeLibrary', { req: 'Init Sites Library', data: {} });
+      store.dispatch( 'initialize', { req: 'Init Sites Library', data: {} });
     }
   });
 };

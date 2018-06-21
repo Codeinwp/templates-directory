@@ -6,10 +6,13 @@
 			</div>
 			<hr>
 			<div class="modal__content">
-				<img :src="item.screenshot" :alt="item.title">
+				<Loader v-if="importing"></Loader>
+				<div v-else>
+					<img :src="item.screenshot" :alt="item.title">
+				</div>
 			</div>
 			<hr>
-			<div class="modal__footer">
+			<div class="modal__footer" v-if="! importing">
 				<button class="button button-secondary" v-on:click="closeModal">
 					{{this.$store.state.strings.cancel_btn}}
 				</button>
@@ -22,32 +25,42 @@
 </template>
 
 <script>
-  import { directive as onClickaway } from 'vue-clickaway'
-
-  export default {
-    name: 'import-modal',
-    computed: {
-      item: function () {
-        return this.$store.state.previewData
-      },
-    },
-    methods: {
-      closeModal: function () {
-        this.$store.commit('showImportModal', false)
-      },
-      startImport: function () {
-        this.$store.dispatch('importSite', {
-          req: 'Import Site',
-          plugins: this.$store.state.previewData.recommended_plugins,
-          content: this.$store.state.previewData.content_file,
-          themeMods: this.$store.state.previewData.theme_mods,
-        })
-      },
-    },
-    directives: {
-      onClickaway,
-    },
-  }
+	import { directive as onClickaway } from 'vue-clickaway'
+	import Loader from './loader.vue'
+	export default {
+		name: 'import-modal',
+		computed: {
+			item: function () {
+				return this.$store.state.previewData
+			},
+			importing: function () {
+				return this.$store.state.importing
+			}
+		},
+		methods: {
+			closeModal: function () {
+				this.$store.commit( 'showImportModal', false )
+			},
+			startImport: function () {
+				this.$store.dispatch( 'importSite', {
+					req: 'Import Site',
+					plugins: this.item.recommended_plugins,
+					content: this.item.content_file,
+					themeMods: {
+						'theme_mods': this.item.theme_mods,
+						'source_url': this.item.demo_url,
+						'front_page': this.item.front_page
+					}
+				} )
+			},
+		},
+		directives: {
+			onClickaway,
+		},
+		components: {
+			Loader
+		}
+	}
 </script>
 
 <style scoped>

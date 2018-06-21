@@ -373,196 +373,6 @@ function updateLink(linkElement, obj) {
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -11526,7 +11336,197 @@ Vue.compile = compileToFunctions;
 
 /* harmony default export */ __webpack_exports__["default"] = (Vue);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(4), __webpack_require__(7).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3), __webpack_require__(4), __webpack_require__(7).setImmediate))
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
 
 /***/ }),
 /* 4 */
@@ -11585,7 +11585,7 @@ if (false) {(function () {  module.hot.accept()
 "use strict";
 
 
-var _vue = __webpack_require__(3);
+var _vue = __webpack_require__(2);
 
 var _vue2 = _interopRequireDefault(_vue);
 
@@ -11593,21 +11593,21 @@ var _main = __webpack_require__(9);
 
 var _main2 = _interopRequireDefault(_main);
 
-var _sitesLibStore = __webpack_require__(37);
+var _store = __webpack_require__(37);
 
-var _sitesLibStore2 = _interopRequireDefault(_sitesLibStore);
+var _store2 = _interopRequireDefault(_store);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 window.onload = function () {
   var siteslibrary = new _vue2.default({
     el: '#ti-sites-library',
-    store: _sitesLibStore2.default,
+    store: _store2.default,
     components: {
       App: _main2.default
     },
     created: function created() {
-      _sitesLibStore2.default.dispatch('initializeLibrary', { req: 'Init Sites Library', data: {} });
+      _store2.default.dispatch('initialize', { req: 'Init Sites Library', data: {} });
     }
   });
 }; /*jshint esversion: 6 */
@@ -11873,7 +11873,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(3)))
 
 /***/ }),
 /* 9 */
@@ -12618,56 +12618,18 @@ exports.push([module.i, "\n\t.modal__header .title[_v-31fcf600] {\n\t\tmargin: 0
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 
 var _vueClickaway = __webpack_require__(33);
 
-exports.default = {
-  name: 'import-modal',
-  computed: {
-    item: function item() {
-      return this.$store.state.previewData;
-    }
-  },
-  methods: {
-    closeModal: function closeModal() {
-      this.$store.commit('showImportModal', false);
-    },
-    startImport: function startImport() {
-      this.$store.dispatch('importSite', {
-        req: 'Import Site',
-        plugins: this.$store.state.previewData.recommended_plugins,
-        content: this.$store.state.previewData.content_file,
-        themeMods: this.$store.state.previewData.theme_mods
-      });
-    }
-  },
-  directives: {
-    onClickaway: _vueClickaway.directive
-  }
-  // </script>
-  //
-  // <style scoped>
-  // 	.modal__header .title {
-  // 		margin: 0;
-  // 	}
-  //
-  // 	.modal__header {
-  // 		padding: 10px;
-  // 	}
-  //
-  // 	.modal__content {
-  // 		padding: 10px;
-  // 	}
-  //
-  // 	.modal__footer {
-  // 		padding: 10px;
-  // 		text-align: right;
-  // 	}
-  // </style>
+var _loader = __webpack_require__(5);
 
-}; // <template>
+var _loader2 = _interopRequireDefault(_loader);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// <template>
 // 	<div class="import-modal__wrapper">
 // 		<div class="modal" v-on-clickaway="closeModal">
 // 			<div class="modal__header">
@@ -12675,10 +12637,13 @@ exports.default = {
 // 			</div>
 // 			<hr>
 // 			<div class="modal__content">
-// 				<img :src="item.screenshot" :alt="item.title">
+// 				<Loader v-if="importing"></Loader>
+// 				<div v-else>
+// 					<img :src="item.screenshot" :alt="item.title">
+// 				</div>
 // 			</div>
 // 			<hr>
-// 			<div class="modal__footer">
+// 			<div class="modal__footer" v-if="! importing">
 // 				<button class="button button-secondary" v-on:click="closeModal">
 // 					{{this.$store.state.strings.cancel_btn}}
 // 				</button>
@@ -12691,6 +12656,61 @@ exports.default = {
 // </template>
 //
 // <script>
+exports.default = {
+	name: 'import-modal',
+	computed: {
+		item: function item() {
+			return this.$store.state.previewData;
+		},
+		importing: function importing() {
+			return this.$store.state.importing;
+		}
+	},
+	methods: {
+		closeModal: function closeModal() {
+			this.$store.commit('showImportModal', false);
+		},
+		startImport: function startImport() {
+			this.$store.dispatch('importSite', {
+				req: 'Import Site',
+				plugins: this.item.recommended_plugins,
+				content: this.item.content_file,
+				themeMods: {
+					'theme_mods': this.item.theme_mods,
+					'source_url': this.item.demo_url,
+					'front_page': this.item.front_page
+				}
+			});
+		}
+	},
+	directives: {
+		onClickaway: _vueClickaway.directive
+	},
+	components: {
+		Loader: _loader2.default
+	}
+	// </script>
+	//
+	// <style scoped>
+	// 	.modal__header .title {
+	// 		margin: 0;
+	// 	}
+	//
+	// 	.modal__header {
+	// 		padding: 10px;
+	// 	}
+	//
+	// 	.modal__content {
+	// 		padding: 10px;
+	// 	}
+	//
+	// 	.modal__footer {
+	// 		padding: 10px;
+	// 		text-align: right;
+	// 	}
+	// </style>
+
+};
 
 /***/ }),
 /* 33 */
@@ -12699,7 +12719,7 @@ exports.default = {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var Vue = __webpack_require__(3);
+var Vue = __webpack_require__(2);
 Vue = 'default' in Vue ? Vue['default'] : Vue;
 
 var version = '2.2.2';
@@ -12780,13 +12800,13 @@ var mixin = {
 exports.version = version;
 exports.directive = directive;
 exports.mixin = mixin;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
 /* 34 */
 /***/ (function(module, exports) {
 
-module.exports = "\n\t<div class=\"import-modal__wrapper\" _v-31fcf600=\"\">\n\t\t<div class=\"modal\" v-on-clickaway=\"closeModal\" _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__header\" _v-31fcf600=\"\">\n\t\t\t\t<h4 class=\"title ellipsis\" _v-31fcf600=\"\">{{this.$store.state.strings.import_btn}}: {{item.title}}</h4>\n\t\t\t</div>\n\t\t\t<hr _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__content\" _v-31fcf600=\"\">\n\t\t\t\t<img :src=\"item.screenshot\" :alt=\"item.title\" _v-31fcf600=\"\">\n\t\t\t</div>\n\t\t\t<hr _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__footer\" _v-31fcf600=\"\">\n\t\t\t\t<button class=\"button button-secondary\" v-on:click=\"closeModal\" _v-31fcf600=\"\">\n\t\t\t\t\t{{this.$store.state.strings.cancel_btn}}\n\t\t\t\t</button>\n\t\t\t\t<button class=\"button button-primary\" v-on:click=\"startImport\" _v-31fcf600=\"\">\n\t\t\t\t\t{{this.$store.state.strings.import_btn}}\n\t\t\t\t</button>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n";
+module.exports = "\n\t<div class=\"import-modal__wrapper\" _v-31fcf600=\"\">\n\t\t<div class=\"modal\" v-on-clickaway=\"closeModal\" _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__header\" _v-31fcf600=\"\">\n\t\t\t\t<h4 class=\"title ellipsis\" _v-31fcf600=\"\">{{this.$store.state.strings.import_btn}}: {{item.title}}</h4>\n\t\t\t</div>\n\t\t\t<hr _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__content\" _v-31fcf600=\"\">\n\t\t\t\t<loader v-if=\"importing\" _v-31fcf600=\"\"></loader>\n\t\t\t\t<div v-else=\"\" _v-31fcf600=\"\">\n\t\t\t\t\t<img :src=\"item.screenshot\" :alt=\"item.title\" _v-31fcf600=\"\">\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<hr _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__footer\" v-if=\"! importing\" _v-31fcf600=\"\">\n\t\t\t\t<button class=\"button button-secondary\" v-on:click=\"closeModal\" _v-31fcf600=\"\">\n\t\t\t\t\t{{this.$store.state.strings.cancel_btn}}\n\t\t\t\t</button>\n\t\t\t\t<button class=\"button button-primary\" v-on:click=\"startImport\" _v-31fcf600=\"\">\n\t\t\t\t\t{{this.$store.state.strings.import_btn}}\n\t\t\t\t</button>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n";
 
 /***/ }),
 /* 35 */
@@ -12811,7 +12831,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _vue = __webpack_require__(3);
+var _vue = __webpack_require__(2);
 
 var _vue2 = _interopRequireDefault(_vue);
 
@@ -12819,18 +12839,21 @@ var _vuex = __webpack_require__(38);
 
 var _vuex2 = _interopRequireDefault(_vuex);
 
-var _vueResource = __webpack_require__(39);
+var _actions = __webpack_require__(39);
 
-var _vueResource2 = _interopRequireDefault(_vueResource);
+var _actions2 = _interopRequireDefault(_actions);
+
+var _mutations = __webpack_require__(42);
+
+var _mutations2 = _interopRequireDefault(_mutations);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_vue2.default.use(_vuex2.default); // jshint ignore: start
+// jshint ignore: start
 
 /* global themeisleSitesLibApi */
 /* exported themeisleSitesLibApi */
-
-_vue2.default.use(_vueResource2.default);
+_vue2.default.use(_vuex2.default);
 
 exports.default = new _vuex2.default.Store({
 	state: {
@@ -12838,102 +12861,12 @@ exports.default = new _vuex2.default.Store({
 		sitesData: null,
 		previewOpen: false,
 		importModalState: false,
+		importing: false,
 		previewData: {},
 		strings: themeisleSitesLibApi.i18ln
 	},
-	data: {
-		promise: null
-	},
-	mutations: {
-		setAjaxState: function setAjaxState(state, data) {
-			state.ajaxLoader = data;
-		},
-		saveSitesData: function saveSitesData(state, data) {
-			state.sitesData = data;
-		},
-		showPreview: function showPreview(state, data) {
-			state.previewOpen = data;
-		},
-		showImportModal: function showImportModal(state, data) {
-			state.importModalState = data;
-		},
-		populatePreview: function populatePreview(state, data) {
-			state.previewData = data;
-		}
-	},
-	actions: {
-		initializeLibrary: function initializeLibrary(_ref, data) {
-			var commit = _ref.commit;
-
-			commit('setAjaxState', true);
-			console.log('Fetching sites.');
-			_vue2.default.http({
-				url: themeisleSitesLibApi.root + '/initialize_sites_library',
-				method: 'GET',
-				headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
-				params: { 'req': data.req },
-				body: data.data,
-				responseType: 'json'
-			}).then(function (response) {
-				if (response.ok) {
-					commit('setAjaxState', false);
-					commit('saveSitesData', response.body);
-				}
-			});
-		},
-		importSite: function importSite(_ref2, data) {
-			var commit = _ref2.commit;
-
-			commit('setAjaxState', true);
-			console.log(data);
-			_vue2.default.http({
-				url: themeisleSitesLibApi.root + '/install_plugins',
-				method: 'POST',
-				headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
-				params: {
-					'req': data.req
-				},
-				body: {
-					'data': data.content
-				},
-				responseType: 'json'
-			}).then(function () {
-				console.log('plugins installed.');
-				return false;
-				_vue2.default.http({
-					url: themeisleSitesLibApi.root + '/import_content',
-					method: 'POST',
-					headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
-					params: {
-						'req': data.req
-					},
-					body: {
-						'data': data.content
-					},
-					responseType: 'json'
-				}).then(function (response) {
-					commit('setAjaxState', false);
-					console.log('imported content.');
-					_vue2.default.http({
-						url: themeisleSitesLibApi.root + '/import_theme_mods',
-						method: 'POST',
-						headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
-						params: {
-							'req': data.req
-						},
-						body: {
-							'data': data.themeMods
-						},
-						responseType: 'json'
-					}).then(function (response) {
-						console.log('imported theme mods.');
-						commit('setAjaxState', false);
-						console.log(response);
-					});
-				});
-			});
-		}
-	}
+	actions: _actions2.default,
+	mutations: _mutations2.default
 });
 
 /***/ }),
@@ -13881,10 +13814,151 @@ var index_esm = {
 
 /* harmony default export */ __webpack_exports__["default"] = (index_esm);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
 /* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _vue = __webpack_require__(2);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _vueResource = __webpack_require__(40);
+
+var _vueResource2 = _interopRequireDefault(_vueResource);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* jshint esversion: 6 */
+/* global themeisleSitesLibApi, console */
+_vue2.default.use(_vueResource2.default);
+
+var initialize = function initialize(_ref, data) {
+	var commit = _ref.commit;
+
+	commit('setAjaxState', true);
+	console.log('Fetching sites.');
+	_vue2.default.http({
+		url: themeisleSitesLibApi.root + '/initialize_sites_library',
+		method: 'GET',
+		headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
+		params: { 'req': data.req },
+		body: data.data,
+		responseType: 'json'
+	}).then(function (response) {
+		if (response.ok) {
+			commit('setAjaxState', false);
+			commit('saveSitesData', response.body);
+		}
+	});
+};
+
+var importSite = function importSite(_ref2, data) {
+	var commit = _ref2.commit;
+
+	startImport({ commit: commit }, data);
+};
+
+var startImport = function startImport(_ref3, data) {
+	var commit = _ref3.commit;
+
+	commit('setImportingState', true);
+	installPlugins({ commit: commit }, data);
+};
+
+var doneImport = function doneImport(_ref4) {
+	var commit = _ref4.commit;
+
+	commit('setImportingState', false);
+	console.log('Import Done');
+};
+
+var installPlugins = function installPlugins(_ref5, data) {
+	var commit = _ref5.commit;
+
+	_vue2.default.http({
+		url: themeisleSitesLibApi.root + '/install_plugins',
+		method: 'POST',
+		headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
+		params: {
+			'req': data.req
+		},
+		body: {
+			'data': data.plugins
+		},
+		responseType: 'json'
+	}).then(function (response) {
+		if (response.ok) {
+			console.log('Installed Plugins.');
+			importContent({ commit: commit }, data);
+		} else {
+			console.error(response);
+		}
+	});
+};
+
+var importContent = function importContent(_ref6, data) {
+	var commit = _ref6.commit;
+
+	_vue2.default.http({
+		url: themeisleSitesLibApi.root + '/import_content',
+		method: 'POST',
+		headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
+		params: {
+			'req': data.req
+		},
+		body: {
+			'data': data.content
+		},
+		responseType: 'json'
+	}).then(function (response) {
+		if (response.ok) {
+			console.log('Imported Content.');
+			importThemeMods({ commit: commit }, data);
+		} else {
+			console.error(response);
+		}
+	});
+};
+
+var importThemeMods = function importThemeMods(_ref7, data) {
+	var commit = _ref7.commit;
+
+	_vue2.default.http({
+		url: themeisleSitesLibApi.root + '/import_theme_mods',
+		method: 'POST',
+		headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
+		params: {
+			'req': data.req
+		},
+		body: {
+			'data': data.themeMods
+		},
+		responseType: 'json'
+	}).then(function (response) {
+		if (response.ok) {
+			doneImport({ commit: commit });
+		} else {
+			console.error(response);
+		}
+	});
+};
+
+exports.default = {
+	initialize: initialize,
+	importSite: importSite
+};
+
+/***/ }),
+/* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14983,7 +15057,7 @@ function xhrClient (request) {
 
 function nodeClient (request) {
 
-    var client = __webpack_require__(40);
+    var client = __webpack_require__(41);
 
     return new PromiseObj(function (resolve) {
 
@@ -15451,10 +15525,49 @@ if (typeof window !== 'undefined' && window.Vue) {
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+/* jshint esversion: 6 */
+var setAjaxState = function setAjaxState(state, data) {
+	state.ajaxLoader = data;
+};
+var setImportingState = function setImportingState(state, data) {
+	state.importing = data;
+};
+var saveSitesData = function saveSitesData(state, data) {
+	state.sitesData = data;
+};
+var showPreview = function showPreview(state, data) {
+	state.previewOpen = data;
+};
+var showImportModal = function showImportModal(state, data) {
+	state.importModalState = data;
+};
+var populatePreview = function populatePreview(state, data) {
+	state.previewData = data;
+};
+
+exports.default = {
+	setAjaxState: setAjaxState,
+	saveSitesData: saveSitesData,
+	showPreview: showPreview,
+	showImportModal: showImportModal,
+	populatePreview: populatePreview,
+	setImportingState: setImportingState
+};
 
 /***/ })
 /******/ ]);

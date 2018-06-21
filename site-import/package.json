@@ -1,7 +1,7 @@
 {
-  "name": "themeisle-onboarding",
+  "name": "themeisle-site-import",
   "version": "1.0.0",
-  "description": "Onboarding for ThemeIsle Themes",
+  "description": "ThemeIsle Site Importer",
   "license": "GPL-3.0+",
   "author": "Themeisle <friends@themeisle.com> | Andrei Baicus <andrei@themeisle.com>",
   "scripts": {
