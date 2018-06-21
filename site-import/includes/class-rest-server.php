@@ -20,7 +20,7 @@ class Rest_Server {
 	public function init() {
 		add_action( 'rest_api_init', array( $this, 'register_endpoints' ) );
 	}
-
+	
 	/**
 	 * Register endpoints.
 	 */
@@ -49,8 +49,14 @@ class Rest_Server {
 				'callback' => array( $this, 'run_theme_mods_importer' ),
 			)
 		);
+		register_rest_route( Plugin::API_ROOT, '/import_widgets',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'run_widgets_importer' ),
+			)
+		);
 	}
-
+	
 	/**
 	 * Initialize Library
 	 *
@@ -58,52 +64,44 @@ class Rest_Server {
 	 */
 	public function init_library() {
 		$cached = get_transient( Plugin::STORAGE_TRANSIENT );
-
+		
 		if ( ! empty( $cached ) ) {
 			return $cached;
 		}
-
+		
 		$theme_support = get_theme_support( 'themeisle-demo-import' );
-
-		if ( empty( $theme_support ) ) {
+		
+		if ( empty( $theme_support[0] ) || ! is_array( $theme_support[0] ) ) {
 			return array();
 		}
-
-		if ( empty( $theme_support ) ) {
-			return array();
-		}
-
-		if ( ! is_array( $theme_support ) ) {
-			return array();
-		}
-
+		
 		$data = array();
-
-		foreach ( $theme_support as $slug => $args ) {
-			print_r( $args['url'] );
+		
+		foreach ( $theme_support[0] as $slug => $args ) {
 			$request = wp_remote_get( $args['url'] . '/wp-json/ti-demo-data/data' );
-
+			
 			if ( empty( $request['body'] ) || ! isset( $request['body'] ) ) {
 				continue;
 			}
-
+			
 			$data[ $slug ]               = json_decode( $request['body'], true );
 			$data[ $slug ]['screenshot'] = $args['screenshot'];
 			$data[ $slug ]['demo_url']   = $args['url'];
 			$data[ $slug ]['title']      = $args['title'];
 		}
-
+		
 		set_transient( Plugin::STORAGE_TRANSIENT, $data, 0 * MINUTE_IN_SECONDS );
-
+		
 		return $data;
 	}
-
+	
 	/**
 	 * Run the plugin importer.
 	 *
 	 * @param \WP_REST_Request $request
 	 */
 	public function run_plugin_importer( \WP_REST_Request $request ) {
+//		wp_send_json_error( 'kill it.' );
 		require_once 'importers/class-plugin-importer.php';
 		if ( ! class_exists( '\ThemeIsle\Plugin_Importer' ) ) {
 			wp_send_json_error( 'Issue with plugin importer' );
@@ -111,13 +109,14 @@ class Rest_Server {
 		$plugin_importer = new Plugin_Importer();
 		$plugin_importer->install_plugins( $request );
 	}
-
+	
 	/**
 	 * Run the XML importer.
 	 *
 	 * @param \WP_REST_Request $request
 	 */
 	public function run_xml_importer( \WP_REST_Request $request ) {
+//		wp_send_json_error( 'kill it.' );
 		require_once 'importers/class-content-importer.php';
 		if ( ! class_exists( '\ThemeIsle\Content_Importer' ) ) {
 			wp_send_json_error( 'Issue with content importer' );
@@ -125,18 +124,34 @@ class Rest_Server {
 		$content_importer = new Content_Importer();
 		$content_importer->import_remote_xml( $request );
 	}
-
+	
 	/**
 	 * Run the theme mods importer.
 	 *
 	 * @param \WP_REST_Request $request
 	 */
 	public function run_theme_mods_importer( \WP_REST_Request $request ) {
+//		wp_send_json_error( 'kill it.' );
 		require_once 'importers/class-theme-mods-importer.php';
 		if ( ! class_exists( '\ThemeIsle\Theme_Mods_Importer' ) ) {
 			wp_send_json_error( 'Issue with theme mods importer' );
 		}
 		$theme_mods_importer = new Theme_Mods_Importer();
 		$theme_mods_importer->import_theme_mods( $request );
+	}
+	
+	/**
+	 * Run the widgets importer.
+	 *
+	 * @param \WP_REST_Request $request
+	 */
+	public function run_widgets_importer( \WP_REST_Request $request ) {
+//		wp_send_json_error( 'kill it.' );
+		require_once 'importers/class-widgets-importer.php';
+		if ( ! class_exists( '\ThemeIsle\Widgets_Importer' ) ) {
+			wp_send_json_error( 'Issue with theme mods importer' );
+		}
+		$theme_mods_importer = new Widgets_Importer();
+		$theme_mods_importer->import_widgets( $request );
 	}
 }

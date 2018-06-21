@@ -493,9 +493,9 @@ class WXR_Importer extends \WP_Importer {
 	/**
 	 * Log an error instance to the logger.
 	 *
-	 * @param WP_Error $error Error instance to log.
+	 * @param \WP_Error $error Error instance to log.
 	 */
-	protected function log_error( WP_Error $error ) {
+	protected function log_error( \WP_Error $error ) {
 		$this->logger->warning( $error->get_error_message() );
 		
 		// Log the data as debug info too
@@ -512,7 +512,7 @@ class WXR_Importer extends \WP_Importer {
 	 */
 	protected function import_start( $file ) {
 		if ( ! is_file( $file ) ) {
-			return new WP_Error( 'wxr_importer.file_missing', __( 'The file does not exist, please try again.', 'textdomain' ) );
+			return new \WP_Error( 'wxr_importer.file_missing', __( 'The file does not exist, please try again.', 'textdomain' ) );
 		}
 		
 		// Suspend bunches of stuff in WP core
@@ -674,7 +674,7 @@ class WXR_Importer extends \WP_Importer {
 					
 					if ( $data['post_status'] === 'auto-draft' ) {
 						// Bail now
-						return new WP_Error(
+						return new \WP_Error(
 							'wxr_importer.post.cannot_import_draft',
 							__( 'Cannot import auto-draft posts', 'textdomain' ),
 							$data
@@ -893,7 +893,7 @@ class WXR_Importer extends \WP_Importer {
 			/**
 			 * Post processing failed.
 			 *
-			 * @param WP_Error $post_id Error object.
+			 * @param \WP_Error $post_id Error object.
 			 * @param array $data Raw data imported for the post.
 			 * @param array $meta Raw meta data, already processed by {@see process_post_meta}.
 			 * @param array $comments Raw comment data, already processed by {@see process_comments}.
@@ -1036,7 +1036,7 @@ class WXR_Importer extends \WP_Importer {
 	 *
 	 * @param array $post Attachment post details from WXR
 	 * @param string $url URL to fetch attachment from
-	 * @return int|WP_Error Post ID on success, WP_Error otherwise
+	 * @return int|WP_Error Post ID on success, \WP_Error otherwise
 	 */
 	protected function process_attachment( $post, $meta, $remote_url ) {
 		// try to use _wp_attached file for upload folder placement to ensure the same location as the export site
@@ -1065,7 +1065,7 @@ class WXR_Importer extends \WP_Importer {
 		
 		$info = wp_check_filetype( $upload['file'] );
 		if ( ! $info ) {
-			return new WP_Error( 'attachment_processing_error', __( 'Invalid file type', 'textdomain' ) );
+			return new \WP_Error( 'attachment_processing_error', __( 'Invalid file type', 'textdomain' ) );
 		}
 		
 		$post['post_mime_type'] = $info['type'];
@@ -1563,7 +1563,7 @@ class WXR_Importer extends \WP_Importer {
 			/**
 			 * User processing failed.
 			 *
-			 * @param WP_Error $user_id Error object.
+			 * @param \WP_Error $user_id Error object.
 			 * @param array $userdata Raw data imported for the user.
 			 */
 			do_action( 'wxr_importer.process_failed.user', $user_id, $userdata );
@@ -1735,7 +1735,7 @@ class WXR_Importer extends \WP_Importer {
 			/**
 			 * Term processing failed.
 			 *
-			 * @param WP_Error $result Error object.
+			 * @param \WP_Error $result Error object.
 			 * @param array $data Raw data imported for the term.
 			 * @param array $meta Meta data supplied for the term.
 			 */
@@ -1775,7 +1775,7 @@ class WXR_Importer extends \WP_Importer {
 	 *
 	 * @param string $url URL of item to fetch
 	 * @param array $post Attachment details
-	 * @return array|WP_Error Local file location details on success, WP_Error otherwise
+	 * @return array|\WP_Error Local file location details on success, \WP_Error otherwise
 	 */
 	protected function fetch_remote_file( $url, $post ) {
 		// extract the file name and extension from the url
@@ -1784,7 +1784,7 @@ class WXR_Importer extends \WP_Importer {
 		// get placeholder file in the upload dir with a unique, sanitized filename
 		$upload = wp_upload_bits( $file_name, 0, '', $post['upload_date'] );
 		if ( $upload['error'] ) {
-			return new WP_Error( 'upload_dir_error', $upload['error'] );
+			return new \WP_Error( 'upload_dir_error', $upload['error'] );
 		}
 		
 		// fetch the remote url and write it to the placeholder file
@@ -1804,7 +1804,7 @@ class WXR_Importer extends \WP_Importer {
 		// make sure the fetch was successful
 		if ( $code !== 200 ) {
 			unlink( $upload['file'] );
-			return new WP_Error(
+			return new \WP_Error(
 				'import_file_error',
 				sprintf(
 					__( 'Remote server returned %1$d %2$s for %3$s', 'textdomain' ),
@@ -1820,19 +1820,19 @@ class WXR_Importer extends \WP_Importer {
 		
 		if ( isset( $headers['content-length'] ) && $filesize !== (int) $headers['content-length'] ) {
 			unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', __( 'Remote file is incorrect size', 'textdomain' ) );
+			return new \WP_Error( 'import_file_error', __( 'Remote file is incorrect size', 'textdomain' ) );
 		}
 		
 		if ( 0 === $filesize ) {
 			unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', __( 'Zero size file downloaded', 'textdomain' ) );
+			return new \WP_Error( 'import_file_error', __( 'Zero size file downloaded', 'textdomain' ) );
 		}
 		
 		$max_size = (int) $this->max_attachment_size();
 		if ( ! empty( $max_size ) && $filesize > $max_size ) {
 			unlink( $upload['file'] );
 			$message = sprintf( __( 'Remote file is too large, limit is %s', 'textdomain' ), size_format( $max_size ) );
-			return new WP_Error( 'import_file_error', $message );
+			return new \WP_Error( 'import_file_error', $message );
 		}
 		
 		return $upload;

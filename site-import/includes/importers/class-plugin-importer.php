@@ -80,12 +80,12 @@ class Plugin_Importer {
 			)
 		);
 
-		require_once 'importer/class-themeisle-quiet-skin.php';
+		require_once 'helpers/class-quiet-skin.php';
 		$skin     = new Quiet_Skin( array( 'api' => $api ) );
 		$upgrader = new \Plugin_Upgrader( $skin );
 		$install  = $upgrader->install( $api->download_link );
 		if ( $install !== true ) {
-			print_r( 'Error: Install process failed (' . $plugin_slug . '). var_dump of result follows.>' . "\n" );
+			print_r( 'Error: Install process failed (' . ucwords( $plugin_slug ) . '). var_dump of result follows.>' . "\n" );
 			var_dump( $install );
 		}
 		print_r( 'Installed "' . ucwords( $plugin_slug ) . '"' . "\n " );
@@ -106,7 +106,7 @@ class Plugin_Importer {
 			$plugin_entry = $plugin_slug . '/' . 'index.php';
 		}
 		if ( ! file_exists( $plugin_path ) ) {
-			print_r( 'No plugin under that directory.' );
+			print_r( 'No plugin with the slug "' . ucwords( $plugin_slug ) . '" under that directory.' . "\n" );
 
 			return;
 		}
@@ -121,7 +121,7 @@ class Plugin_Importer {
 		$this->maybe_provide_activation_help( $plugin_slug, $plugin_dir );
 
 		activate_plugin( $plugin_path );
-		print_r( 'Activated ' . $plugin_slug . '.' );
+		print_r( 'Activated ' . ucwords( $plugin_slug ) . '.' . "\n" );
 	}
 
 	/**

@@ -34,7 +34,7 @@ const startImport = function ( { commit }, data ) {
 
 const doneImport = function ( { commit } ) {
 	commit( 'setImportingState', false );
-	console.log( 'Import Done' );
+	console.log( 'Import Done.' );
 };
 
 const installPlugins = function ( { commit }, data ) {
@@ -95,7 +95,30 @@ const importThemeMods = function ( { commit }, data ) {
 		responseType: 'json',
 	} ).then( function ( response ) {
 		if( response.ok ) {
-			doneImport( { commit } );
+      console.log( 'Imported Customizer.' );
+      importWidgets( { commit }, data );
+		} else {
+			console.error( response );
+		}
+	} );
+};
+
+const importWidgets = function ( { commit }, data ) {
+	Vue.http( {
+		url: themeisleSitesLibApi.root + '/import_widgets',
+		method: 'POST',
+		headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
+		params: {
+			'req': data.req,
+		},
+		body: {
+			'data': data.widgets,
+		},
+		responseType: 'json',
+	} ).then( function ( response ) {
+		if( response.ok ) {
+      console.log( 'Imported Widgets.' );
+      doneImport( { commit } );
 		} else {
 			console.error( response );
 		}

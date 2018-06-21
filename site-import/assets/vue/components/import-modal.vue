@@ -50,7 +50,8 @@
 						'theme_mods': this.item.theme_mods,
 						'source_url': this.item.demo_url,
 						'front_page': this.item.front_page
-					}
+					},
+				  widgets: this.item.widgets
 				} )
 			},
 		},
