@@ -242,6 +242,20 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 					'screenshot'  => esc_url( $this->get_source_url() . 'mocha-elementor/screenshot.png' ),
 					'import_file' => esc_url( $this->get_source_url() . 'mocha-elementor/template.json' ),
 				),
+				'rik-landing'              => array(
+					'title'       => __( 'Rik - Landing Page', 'textdomain' ),
+					'description' => __( 'This is a clean Landing page, ready to be used for an app presentation. It features beautiful gradients and great layouts for showcasing your product.', 'textdomain' ),
+					'demo_url'    => 'https://demo.themeisle.com/hestia-pro-demo-content/rik-elementor/',
+					'screenshot'  => esc_url( $this->get_source_url() . 'rik-elementor/screenshot.jpg' ),
+					'import_file' => esc_url( $this->get_source_url() . 'rik-elementor/template.json' ),
+				),
+				'zerif-lite'              => array(
+					'title'       => __( 'Zerif Lite - One Page Template', 'textdomain' ),
+					'description' => __( 'A friendly one-page WordPress multipurpose theme, with a full-width image in the background and a simple white menu bar at the top. It comes with an elegant and modern design, which could fit very well any kind of business. Zerif Lite has an interactive and colorful interface, with classy parallax effect and lively animations. You can use it for your online shop as well.', 'textdomain' ),
+					'demo_url'    => 'https://demo.themeisle.com/hestia-pro-demo-content/zerif-lite/',
+					'screenshot'  => esc_url( $this->get_source_url() . 'zerif-elementor/screenshot.jpg' ),
+					'import_file' => esc_url( $this->get_source_url() . 'zerif-elementor/template.json' ),
+				),
 			);
 
 			foreach ( $templates_list as $template => $properties ) {
