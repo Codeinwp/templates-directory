@@ -83,12 +83,6 @@ class ThemeIsle_Site_Import {
 				'callback' => array( $this, 'init_library' ),
 			)
 		);
-		register_rest_route( $this->api_root, '/save_fetched',
-			array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'save_fetched_listing_handler' ),
-			)
-		);
 		register_rest_route( $this->api_root, '/install_plugins',
 			array(
 				'methods'  => 'POST',
@@ -199,7 +193,6 @@ class ThemeIsle_Site_Import {
 		return $data;
 	}
 	
-	
 	/**
 	 * Get module strings.
 	 *
@@ -212,7 +205,14 @@ class ThemeIsle_Site_Import {
 			'cancel_btn'  => __( 'Cancel', 'textdomain' ),
 		);
 	}
-	
+
+	/**
+	 * Install Plugins.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return mixed|WP_REST_Response
+	 */
 	public function install_plugins( \WP_REST_Request $request ) {
 		if ( ! current_user_can( 'install_plugins' ) ) {
 			wp_send_json_error( 'Sorry, you are not allowed to install plugins on this site.' );
@@ -226,15 +226,13 @@ class ThemeIsle_Site_Import {
 		}
 		$active_plugins = get_option( 'active_plugins' );
 		
-		foreach ( $plugins as $plugin_nicename => $plugin_slug ) {
+		foreach ( $plugins as $plugin_slug ) {
 			if ( in_array( $plugin_slug, $active_plugins ) ) {
-				print_r( 'Plugin is already active' );
 				continue;
 			}
 			$this->install_single_plugin( $plugin_slug );
 			$this->activate_single_plugin( $plugin_slug );
 		}
-		die();
 	}
 	
 	/**
@@ -349,27 +347,45 @@ class ThemeIsle_Site_Import {
 		}
 		
 		set_time_limit( 10000 );
-		
 		require_once( ABSPATH . 'wp-admin/includes/file.php' );
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
 		require_once( ABSPATH . 'wp-admin/includes/media.php' );
-		
 		$logger       = new \ThemeIsle_Importer_Logger();
-		$content_file = \download_url( esc_url( $content_file_url ) );
+		$content_file = file_get_contents( $content_file_url );
+		$content_file_path = $this->save_xhr_return_path( $content_file );
+
+		if( !file_exists( $content_file_path ) || ! is_readable( $content_file_path ) ) {
+			wp_send_json_error( 'Ixport not readable' );
+		}
 		$importer     = new \ThemeIsle_WXR_Importer();
 		$importer->set_logger( $logger );
-		$result = $importer->import( $content_file );
-		
+		$result = $importer->import( $content_file_path );
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( 'Could not import content.' );
 		}
-		unlink( $content_file );
+		unlink( $content_file_path );
 		print_r( 'Content imported.' );
-		
 		$this->maybe_bust_elementor_cache();
 		die();
 	}
-	
+
+
+	/**
+	 * @param $content
+	 *
+	 * @return string
+	 */
+	private function save_xhr_return_path( $content ) {
+		$wp_upload_dir  = wp_upload_dir( null, false );
+		$file_path = $wp_upload_dir['basedir'] . '/themeisle-demo-import.xml';
+		ob_start();
+		echo $content;
+		$result = ob_get_clean();
+		file_put_contents( $file_path, $result );
+
+		return $file_path;
+	}
+
 	private function maybe_bust_elementor_cache() {
 		if ( class_exists( 'Elementor' ) ) {
 			Elementor\Plugin::$instance->posts_css_manager->clear_cache();
@@ -377,11 +393,15 @@ class ThemeIsle_Site_Import {
 	}
 	
 	public function import_theme_mods( \WP_REST_Request $request ) {
+		die();
 		$params         = $request->get_json_params();
-		$theme_mods_url = $params['data'];
-		$theme_mods     = wp_remote_get( $theme_mods_url );
-		if ( empty ( $theme_mods['body'] ) ) {
+		$theme_mods = $params['data'];
+		if ( empty ( $theme_mods ) ) {
 			wp_send_json_error( 'No theme mods to import.' );
+		}
+
+		foreach ( $theme_mods as $mod => $value ) {
+			set_theme_mod( $mod, $value );
 		}
 		print_r( $theme_mods['body'] );
 		die();

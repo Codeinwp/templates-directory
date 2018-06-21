@@ -6,7 +6,7 @@
 			</div>
 			<hr>
 			<div class="modal__content">
-				{{item}}
+				<img :src="item.screenshot" :alt="item.title">
 			</div>
 			<hr>
 			<div class="modal__footer">
