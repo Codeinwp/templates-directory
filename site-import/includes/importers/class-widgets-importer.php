@@ -25,6 +25,7 @@ class Widgets_Importer {
 			wp_send_json_success( 'No widgets to import.' );
 		}
 		$this->actually_import( $widgets );
+		wp_send_json_success( 'Widgets Imported.' );
 	}
 	
 	/**
