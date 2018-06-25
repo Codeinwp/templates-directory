@@ -7,6 +7,7 @@
 namespace ThemeIsle;
 
 use ThemeIsle\Quiet_Skin as Quiet_Skin;
+
 /**
  * Class Plugin_Importer
  *
@@ -85,10 +86,40 @@ class Plugin_Importer {
 		$upgrader = new \Plugin_Upgrader( $skin );
 		$install  = $upgrader->install( $api->download_link );
 		if ( $install !== true ) {
-			print_r( 'Error: Install process failed (' . ucwords( $plugin_slug ) . '). var_dump of result follows.>' . "\n" );
-			var_dump( $install );
+			print_r( 'Error: Install process failed (' . ucwords( $plugin_slug ) . ').' . "\n" );
+			return;
 		}
 		print_r( 'Installed "' . ucwords( $plugin_slug ) . '"' . "\n " );
+	}
+
+	private function get_plugin_path( $slug ) {
+		$plugin_dir = WP_PLUGIN_DIR . '/' . $slug;
+
+		if ( $slug === 'advanced-css-editor' ) {
+			return $plugin_dir . '/css-editor.php';
+		}
+
+		$plugin_path = $plugin_dir . '/' . $slug . '.php';
+
+		if ( ! file_exists( $plugin_path ) ) {
+			$plugin_path = $plugin_dir . '/' . 'index.php';
+		}
+
+		return $plugin_path;
+	}
+
+	private function get_plugin_entry( $slug ) {
+		if ( $slug === 'advanced-css-editor' ) {
+			return $slug . '/css-editor.php';
+		}
+
+		$plugins_dir = WP_PLUGIN_DIR . '/';
+		$entry       = $slug . '/' . $slug . '.php';
+		if ( ! file_exists( $plugins_dir . $entry ) ) {
+			$entry = $slug . '/index.php';
+		}
+
+		return $entry;
 	}
 
 	/**
@@ -99,14 +130,11 @@ class Plugin_Importer {
 	private function activate_single_plugin( $plugin_slug ) {
 		$plugin_dir = WP_PLUGIN_DIR . '/' . $plugin_slug;
 
-		$plugin_path  = $plugin_dir . '/' . $plugin_slug . '.php';
-		$plugin_entry = $plugin_slug . '/' . $plugin_slug . '.php';
+		$plugin_path  = $this->get_plugin_path( $plugin_slug );
+		$plugin_entry = $this->get_plugin_entry( $plugin_slug );
+
 		if ( ! file_exists( $plugin_path ) ) {
-			$plugin_path  = $plugin_dir . '/' . 'index.php';
-			$plugin_entry = $plugin_slug . '/' . 'index.php';
-		}
-		if ( ! file_exists( $plugin_path ) ) {
-			print_r( 'No plugin with the slug "' . ucwords( $plugin_slug ) . '" under that directory.' . "\n" );
+			print_r( 'No plugin with the slug "' . $plugin_slug . '" under that directory.' . "\n" );
 
 			return;
 		}

@@ -18,6 +18,7 @@ class Rest_Server {
 	 * Initialize the rest functionality.
 	 */
 	public function init() {
+		delete_transient( Plugin::STORAGE_TRANSIENT );
 		add_action( 'rest_api_init', array( $this, 'register_endpoints' ) );
 	}
 	
@@ -66,11 +67,11 @@ class Rest_Server {
 		$cached = get_transient( Plugin::STORAGE_TRANSIENT );
 		
 		if ( ! empty( $cached ) ) {
+			print_r( 'Loading sites from cache...' . "\n" );
 			return $cached;
 		}
-		
 		$theme_support = get_theme_support( 'themeisle-demo-import' );
-		
+
 		if ( empty( $theme_support[0] ) || ! is_array( $theme_support[0] ) ) {
 			return array();
 		}
@@ -90,7 +91,7 @@ class Rest_Server {
 			$data[ $slug ]['title']      = $args['title'];
 		}
 		
-		set_transient( Plugin::STORAGE_TRANSIENT, $data, 0 * MINUTE_IN_SECONDS );
+		set_transient( Plugin::STORAGE_TRANSIENT, $data, 0.1 * MINUTE_IN_SECONDS );
 		
 		return $data;
 	}

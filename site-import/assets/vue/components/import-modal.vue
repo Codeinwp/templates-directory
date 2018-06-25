@@ -45,11 +45,13 @@
 				this.$store.dispatch( 'importSite', {
 					req: 'Import Site',
 					plugins: this.item.recommended_plugins,
-					content: this.item.content_file,
+					content: {
+						'content_file' : this.item.content_file,
+						'front_page': this.item.front_page
+					},
 					themeMods: {
 						'theme_mods': this.item.theme_mods,
-						'source_url': this.item.demo_url,
-						'front_page': this.item.front_page
+						'source_url': this.item.demo_url
 					},
 				  widgets: this.item.widgets
 				} )

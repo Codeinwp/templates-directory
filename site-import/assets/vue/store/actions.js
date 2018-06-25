@@ -50,7 +50,7 @@ const installPlugins = function ( { commit }, data ) {
 		},
 		responseType: 'json',
 	} ).then( function ( response ) {
-		if( response.ok ) {
+		if ( response.ok ) {
 			console.log( 'Installed Plugins.' );
 			importContent( { commit }, data );
 		} else {
@@ -68,11 +68,14 @@ const importContent = function ( { commit }, data ) {
 			'req': data.req,
 		},
 		body: {
-			'data': data.content,
+			'data': {
+				'contentFile' : data.content.content_file,
+				'frontPage' : data.content.front_page
+			},
 		},
 		responseType: 'json',
 	} ).then( function ( response ) {
-		if( response.ok ) {
+		if ( response.ok ) {
 			console.log( 'Imported Content.' );
 			importThemeMods( { commit }, data );
 		} else {
@@ -94,9 +97,9 @@ const importThemeMods = function ( { commit }, data ) {
 		},
 		responseType: 'json',
 	} ).then( function ( response ) {
-		if( response.ok ) {
-      console.log( 'Imported Customizer.' );
-      importWidgets( { commit }, data );
+		if ( response.ok ) {
+			console.log( 'Imported Customizer.' );
+			importWidgets( { commit }, data );
 		} else {
 			console.error( response );
 		}
@@ -116,9 +119,9 @@ const importWidgets = function ( { commit }, data ) {
 		},
 		responseType: 'json',
 	} ).then( function ( response ) {
-		if( response.ok ) {
-      console.log( 'Imported Widgets.' );
-      doneImport( { commit } );
+		if ( response.ok ) {
+			console.log( 'Imported Widgets.' );
+			doneImport( { commit } );
 		} else {
 			console.error( response );
 		}

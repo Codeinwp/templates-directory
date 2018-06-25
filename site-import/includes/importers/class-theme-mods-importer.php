@@ -52,11 +52,7 @@ class Theme_Mods_Importer {
 			}
 			set_theme_mod( $mod, $value );
 		}
-		
-		//Set front page.
-		if ( isset( $data['front_page'] ) && ! empty( $data['front_page'] ) ) {
-			$this->setup_front_page( $data['front_page'] );
-		}
+
 		//Set nav menu locations.
 		if ( isset( $this->theme_mods['__ti_import_menus_location'] ) ) {
 			$menus = $this->theme_mods['__ti_import_menus_location'];
@@ -78,28 +74,6 @@ class Theme_Mods_Importer {
 		$escaped_source_url  = str_replace( '/', '\/', $source_site );
 		$escaped_current_url = str_replace( '/', '\/', $current_site );
 		$item                = str_replace( $escaped_source_url, $escaped_current_url, $item );
-	}
-	
-	/**
-	 * Set up front page options.
-	 *
-	 * @param $args
-	 */
-	private function setup_front_page( $args ) {
-		if ( ! is_array( $args ) ) {
-			return;
-		}
-		update_option( 'show_on_front', 'page' );
-		
-		if ( isset( $args['front_page'] ) ) {
-			update_option( 'page_on_front', $args['front_page'] );
-		}
-		
-		if ( isset( $args['blog_page'] ) ) {
-			update_option( 'page_for_posts', $args['blog_page'] );
-		}
-		
-		print_r( 'Front page set up.' . "\n" );
 	}
 	
 	/**

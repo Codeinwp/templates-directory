@@ -69,7 +69,7 @@ class Site_Import_Admin {
 	 * Enqueue script and styles.
 	 */
 	public function enqueue() {
-		wp_register_script( 'themeisle-site-lib', plugin_dir_url(Plugin::get_dir() ) . '/assets/js/bundle.js', array(), Plugin::VERSION, true );
+		wp_register_script( 'themeisle-site-lib', plugin_dir_url( Plugin::get_dir() ) . '/assets/js/bundle.js', array(), Plugin::VERSION, true );
 
 		wp_localize_script( 'themeisle-site-lib', 'themeisleSitesLibApi', $this->localize_sites_library() );
 

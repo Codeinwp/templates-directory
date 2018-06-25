@@ -21,7 +21,8 @@ class Content_Importer {
 		}
 
 		$params           = $request->get_json_params();
-		$content_file_url = $params['data'];
+		$body             = $params['data'];
+		$content_file_url = $body['contentFile'];
 
 		if ( empty( $content_file_url ) ) {
 			wp_send_json_error( 'No content to import.' );
@@ -47,6 +48,12 @@ class Content_Importer {
 		unlink( $content_file_path );
 		print_r( 'Content imported.' . "\n" );
 		$this->maybe_bust_elementor_cache();
+
+		//Set front page.
+		if ( isset( $body['frontPage'] ) && ! empty( $body['frontPage'] ) ) {
+			$this->setup_front_page( $body['frontPage'] );
+		}
+
 		die();
 	}
 
@@ -68,11 +75,40 @@ class Content_Importer {
 	}
 
 	/**
+	 * Set up front page options.
 	 *
+	 * @param $args
+	 */
+	private function setup_front_page( $args ) {
+		if ( ! is_array( $args ) ) {
+			return;
+		}
+		update_option( 'show_on_front', 'page' );
+
+		if ( isset( $args['front_page'] ) ) {
+			update_option( 'page_on_front', $args['front_page'] );
+		}
+
+		if ( isset( $args['blog_page'] ) ) {
+			update_option( 'page_for_posts', $args['blog_page'] );
+		}
+
+		print_r( 'Front page set up.' . "\n" );
+	}
+
+	/**
+	 * Maybe bust cache for elementor plugin.
 	 */
 	private function maybe_bust_elementor_cache() {
-		if ( class_exists( 'Elementor' ) ) {
-			Elementor\Plugin::$instance->posts_css_manager->clear_cache();
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			wp_remote_post(
+				admin_url( 'admin-ajax.php' ),
+				array(
+					'body' => array(
+						'action' => 'elementor_clear_cache'
+					)
+				)
+			);
 			print_r( 'Busted Elementor Cache.' . "\n" );
 		}
 	}
