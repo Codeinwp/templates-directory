@@ -17,6 +17,9 @@ const showImportModal = ( state, data ) => {
 const populatePreview = ( state, data ) => {
 	state.previewData = data;
 };
+const updateSteps = ( state, data ) => {
+	state.currentStep = data;
+};
 
 export default {
 	setAjaxState,
@@ -24,5 +27,6 @@ export default {
 	showPreview,
 	showImportModal,
 	populatePreview,
-	setImportingState
+	setImportingState,
+	updateSteps
 };

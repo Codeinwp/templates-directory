@@ -17,7 +17,8 @@ export default new Vuex.Store( {
 		importModalState: false,
 		importing: false,
 		previewData: {},
-		strings: themeisleSitesLibApi.i18ln
+		strings: themeisleSitesLibApi.i18ln,
+		currentStep: 'inactive',
 	},
 	actions,
 	mutations

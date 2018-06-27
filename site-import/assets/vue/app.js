@@ -6,14 +6,14 @@ import store from './store/store.js';
 
 
 window.onload = function () {
-  const siteslibrary = new Vue({
-    el: '#ti-sites-library',
-    store,
-    components: {
-	    App
-    },
-    created () {
-      store.dispatch( 'initialize', { req: 'Init Sites Library', data: {} });
-    }
-  });
+	new Vue( {
+		el: '#ti-sites-library',
+		store,
+		components: {
+			App
+		},
+		created() {
+			store.dispatch( 'initialize', { req: 'Init Sites Library', data: {} } );
+		}
+	} );
 };

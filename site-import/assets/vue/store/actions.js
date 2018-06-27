@@ -33,11 +33,14 @@ const startImport = function ( { commit }, data ) {
 };
 
 const doneImport = function ( { commit } ) {
+	commit( 'updateSteps', 'done' );
 	commit( 'setImportingState', false );
 	console.log( 'Import Done.' );
+	window.location.replace( themeisleSitesLibApi.homeUrl );
 };
 
 const installPlugins = function ( { commit }, data ) {
+	commit( 'updateSteps', 'plugins' );
 	Vue.http( {
 		url: themeisleSitesLibApi.root + '/install_plugins',
 		method: 'POST',
@@ -60,6 +63,7 @@ const installPlugins = function ( { commit }, data ) {
 };
 
 const importContent = function ( { commit }, data ) {
+	commit( 'updateSteps', 'content' );
 	Vue.http( {
 		url: themeisleSitesLibApi.root + '/import_content',
 		method: 'POST',
@@ -69,8 +73,8 @@ const importContent = function ( { commit }, data ) {
 		},
 		body: {
 			'data': {
-				'contentFile' : data.content.content_file,
-				'frontPage' : data.content.front_page
+				'contentFile': data.content.content_file,
+				'frontPage': data.content.front_page
 			},
 		},
 		responseType: 'json',
@@ -85,6 +89,7 @@ const importContent = function ( { commit }, data ) {
 };
 
 const importThemeMods = function ( { commit }, data ) {
+	commit( 'updateSteps', 'theme_mods' );
 	Vue.http( {
 		url: themeisleSitesLibApi.root + '/import_theme_mods',
 		method: 'POST',
@@ -107,6 +112,7 @@ const importThemeMods = function ( { commit }, data ) {
 };
 
 const importWidgets = function ( { commit }, data ) {
+	commit( 'updateSteps', 'widgets' );
 	Vue.http( {
 		url: themeisleSitesLibApi.root + '/import_widgets',
 		method: 'POST',

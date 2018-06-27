@@ -69,7 +69,7 @@ class Site_Import_Admin {
 	 * Enqueue script and styles.
 	 */
 	public function enqueue() {
-		wp_register_script( 'themeisle-site-lib', plugin_dir_url( Plugin::get_dir() ) . '/assets/js/bundle.js', array(), Plugin::VERSION, true );
+		wp_register_script( 'themeisle-site-lib', plugin_dir_url( Plugin::get_dir() ) . '/assets/js/bundle.min.js', array(), Plugin::VERSION, true );
 
 		wp_localize_script( 'themeisle-site-lib', 'themeisleSitesLibApi', $this->localize_sites_library() );
 
@@ -93,6 +93,7 @@ class Site_Import_Admin {
 				'nonce' => wp_create_nonce( 'wp_rest' ),
 			);
 		}
+		$api['homeUrl']     = home_url();
 		$api['i18ln']       = $this->get_strings();
 		$api['cachedSites'] = get_transient( Plugin::STORAGE_TRANSIENT );
 
@@ -106,9 +107,18 @@ class Site_Import_Admin {
 	 */
 	private function get_strings() {
 		return array(
-			'preview_btn' => __( 'Preview', 'textdomain' ),
-			'import_btn'  => __( 'Import', 'textdomain' ),
-			'cancel_btn'  => __( 'Cancel', 'textdomain' ),
+			'preview_btn'        => __( 'Preview', 'textdomain' ),
+			'import_btn'         => __( 'Import', 'textdomain' ),
+			'cancel_btn'         => __( 'Cancel', 'textdomain' ),
+			'loading'            => __( 'Loading', 'textdomain' ),
+			'import_steps'       => array(
+				'plugins'    => __( 'Installing Plugins', 'textdomain' ),
+				'content'    => __( 'Importing Content', 'textdomain' ),
+				'theme_mods' => __( 'Setting Up Customizer', 'textdomain' ),
+				'widgets'    => __( 'Importing Widgets', 'textdomain' ),
+			),
+			'import_description' => __( 'The import process will start installing necessary plugins, importing content (pages, posts, media), setting up customizer options and importing widgets.', 'textdomain' ),
+			'import_done'        => __( 'Content was successfully imported. Enjoy your new site!', 'textdomain' ),
 		);
 	}
 }

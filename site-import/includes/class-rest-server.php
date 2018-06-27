@@ -18,10 +18,9 @@ class Rest_Server {
 	 * Initialize the rest functionality.
 	 */
 	public function init() {
-		delete_transient( Plugin::STORAGE_TRANSIENT );
 		add_action( 'rest_api_init', array( $this, 'register_endpoints' ) );
 	}
-	
+
 	/**
 	 * Register endpoints.
 	 */
@@ -56,8 +55,14 @@ class Rest_Server {
 				'callback' => array( $this, 'run_widgets_importer' ),
 			)
 		);
+//		register_rest_route( Plugin::API_ROOT, '/reset_site',
+//			array(
+//				'methods'  => 'POST',
+//				'callback' => array( $this, 'run_website_reset' ),
+//			)
+//		);
 	}
-	
+
 	/**
 	 * Initialize Library
 	 *
@@ -65,9 +70,10 @@ class Rest_Server {
 	 */
 	public function init_library() {
 		$cached = get_transient( Plugin::STORAGE_TRANSIENT );
-		
+
 		if ( ! empty( $cached ) ) {
 			print_r( 'Loading sites from cache...' . "\n" );
+
 			return $cached;
 		}
 		$theme_support = get_theme_support( 'themeisle-demo-import' );
@@ -75,27 +81,27 @@ class Rest_Server {
 		if ( empty( $theme_support[0] ) || ! is_array( $theme_support[0] ) ) {
 			return array();
 		}
-		
+
 		$data = array();
-		
+
 		foreach ( $theme_support[0] as $slug => $args ) {
 			$request = wp_remote_get( $args['url'] . '/wp-json/ti-demo-data/data' );
-			
+
 			if ( empty( $request['body'] ) || ! isset( $request['body'] ) ) {
 				continue;
 			}
-			
+
 			$data[ $slug ]               = json_decode( $request['body'], true );
 			$data[ $slug ]['screenshot'] = $args['screenshot'];
 			$data[ $slug ]['demo_url']   = $args['url'];
 			$data[ $slug ]['title']      = $args['title'];
 		}
-		
+
 		set_transient( Plugin::STORAGE_TRANSIENT, $data, 0.1 * MINUTE_IN_SECONDS );
-		
+
 		return $data;
 	}
-	
+
 	/**
 	 * Run the plugin importer.
 	 *
@@ -110,7 +116,7 @@ class Rest_Server {
 		$plugin_importer = new Plugin_Importer();
 		$plugin_importer->install_plugins( $request );
 	}
-	
+
 	/**
 	 * Run the XML importer.
 	 *
@@ -125,7 +131,7 @@ class Rest_Server {
 		$content_importer = new Content_Importer();
 		$content_importer->import_remote_xml( $request );
 	}
-	
+
 	/**
 	 * Run the theme mods importer.
 	 *
@@ -140,7 +146,7 @@ class Rest_Server {
 		$theme_mods_importer = new Theme_Mods_Importer();
 		$theme_mods_importer->import_theme_mods( $request );
 	}
-	
+
 	/**
 	 * Run the widgets importer.
 	 *
@@ -154,5 +160,20 @@ class Rest_Server {
 		}
 		$theme_mods_importer = new Widgets_Importer();
 		$theme_mods_importer->import_widgets( $request );
+	}
+
+	/**
+	 * Run reset website.
+	 *
+	 * @param \WP_REST_Request $request
+	 */
+	public function run_website_reset( \WP_REST_Request $request ) {
+		wp_send_json_error( 'Feature suspended.' );
+		require_once 'class-reset-site.php';
+		if ( ! class_exists( '\ThemeIsle\Reset_Site' ) ) {
+			wp_send_json_error( 'Issue site reset.' );
+		}
+		$site_reset = new Reset_Site();
+		$site_reset->reset_site( $request );
 	}
 }

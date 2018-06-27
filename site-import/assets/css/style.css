@@ -21,7 +21,7 @@
     height: auto;
     border: none;
     flex: 1;
-    overflow:hidden;
+    overflow: hidden;
 }
 
 .preview-sidebar__container {
@@ -39,7 +39,7 @@
 
 .import-modal__wrapper {
     position: fixed;
-    background: rgba( 0,0,0, 0.75 );
+    background: rgba(0, 0, 0, 0.75);
     top: 0;
     left: 0;
     right: 0;
@@ -52,10 +52,31 @@
 
 .import-modal__wrapper .modal {
     background: #fff;
-    width: auto;
-    max-width: 500px;
+    max-width: 600px;
     border: 1px solid #ccc;
     border-radius: 3px;
+    width: 600px;
+}
+
+.import-modal__wrapper .modal__content {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+}
+
+.modal__content .left__content,
+.modal__content .right__content {
+    padding: 5px;
+}
+
+.modal__content .right__content .screenshot {
+    max-width: 200px;
+}
+
+.modal__content .right__content p {
+    margin: 0;
+    font-size: 16px;
 }
 
 @media ( max-width: 1080px ) {
@@ -78,8 +99,21 @@
     .ti-sites-lib .site-box {
         margin-bottom: 20px;
     }
+
     .ti-sites-lib .site-box img {
         object-fit: cover;
         width: 1000px;
+    }
+
+    .import-modal__wrapper .modal__content {
+        flex-direction: column-reverse;
+    }
+
+    .modal__content .right__content .screenshot {
+        max-width: 100%;
+    }
+
+    .import-modal__wrapper .modal {
+        width: 100%;
     }
 }

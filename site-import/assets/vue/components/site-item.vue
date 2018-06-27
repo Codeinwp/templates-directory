@@ -1,7 +1,7 @@
 <template>
 	<div class="site-box">
 		<div class="preview-image">
-		<img :src="site_data.screenshot" alt="">
+		<img :src="site_data.screenshot" :alt="site_data.title">
 		</div>
 		<div class="footer">
 			<h4>{{site_data.title}}</h4>
@@ -18,10 +18,6 @@
         default: {},
         type: Object,
       },
-    },
-    data () {
-      return {
-      }
     },
     methods: {
       setupPreview: function() {

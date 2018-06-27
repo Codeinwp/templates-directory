@@ -9,6 +9,7 @@ namespace ThemeIsle;
 
 use ThemeIsle\Site_Import_Admin as Admin;
 use ThemeIsle\Rest_Server as Rest_Server;
+use \Elementor\Post_CSS_File as CSS_File;
 
 /**
  * Class Site_Import

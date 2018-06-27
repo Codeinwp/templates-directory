@@ -75,7 +75,7 @@ class Content_Importer {
 	}
 
 	/**
-	 * Set up front page options.
+	 * Set up front page options by `post_name`.
 	 *
 	 * @param $args
 	 */
@@ -83,14 +83,21 @@ class Content_Importer {
 		if ( ! is_array( $args ) ) {
 			return;
 		}
+
 		update_option( 'show_on_front', 'page' );
 
-		if ( isset( $args['front_page'] ) ) {
-			update_option( 'page_on_front', $args['front_page'] );
+		if ( isset( $args['front_page'] ) && $args['front_page'] !== null ) {
+			$front_page_obj = get_page_by_path( $args['front_page'] );
+			if ( isset( $front_page_obj->ID ) ) {
+				update_option( 'page_on_front', $front_page_obj->ID );
+			}
 		}
 
-		if ( isset( $args['blog_page'] ) ) {
-			update_option( 'page_for_posts', $args['blog_page'] );
+		if ( isset( $args['blog_page'] ) && $args['blog_page'] !== null ) {
+			$blog_page_obj = get_page_by_path( $args['blog_page'] );
+			if ( isset( $blog_page_obj->ID ) ) {
+				update_option( 'page_for_posts', $args['blog_page'] );
+			}
 		}
 
 		print_r( 'Front page set up.' . "\n" );
@@ -126,4 +133,5 @@ class Content_Importer {
 		require dirname( __FILE__ ) . '/helpers/wxr_importer/class-wxr-importer.php';
 		require dirname( __FILE__ ) . '/helpers/wxr_importer/class-wxr-import-info.php';
 	}
+
 }
