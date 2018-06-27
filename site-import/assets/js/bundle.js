@@ -12634,7 +12634,9 @@ exports.default = {
 	},
 	methods: {
 		closeModal: function closeModal() {
-			this.$store.commit('showImportModal', false);
+			if (!this.importing) {
+				this.$store.commit('showImportModal', false);
+			}
 		},
 		startImport: function startImport() {
 			this.$store.dispatch('importSite', {

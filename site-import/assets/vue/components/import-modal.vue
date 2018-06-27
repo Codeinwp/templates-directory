@@ -60,7 +60,9 @@
 		},
 		methods: {
 			closeModal: function () {
-				this.$store.commit( 'showImportModal', false )
+				if( ! this.importing ) {
+					this.$store.commit( 'showImportModal', false )
+				}
 			},
 			startImport: function () {
 				this.$store.dispatch( 'importSite', {

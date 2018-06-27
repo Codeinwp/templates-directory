@@ -97,7 +97,7 @@ class Rest_Server {
 			$data[ $slug ]['title']      = $args['title'];
 		}
 
-		set_transient( Plugin::STORAGE_TRANSIENT, $data, 0.1 * MINUTE_IN_SECONDS );
+		set_transient( Plugin::STORAGE_TRANSIENT, $data, 12 * HOUR_IN_SECONDS );
 
 		return $data;
 	}
