@@ -5,8 +5,6 @@
 
 namespace ThemeIsle;
 
-use function MongoDB\BSON\fromJSON;
-
 /**
  * Class WXR_Importer
  * @package ThemeIsle
@@ -66,6 +64,7 @@ class WXR_Importer extends \WP_Importer {
 
 	protected $url_remap = array();
 	protected $featured_images = array();
+	protected $options = array();
 
 	/**
 	 * Logger instance.
@@ -1028,7 +1027,7 @@ class WXR_Importer extends \WP_Importer {
 
 			default:
 				// associated object is missing or not imported yet, we'll retry later
-				$this->missing_menu_items[] = $item;
+				$this->missing_menu_items[] = null;
 				$this->logger->debug( 'Unknown menu item type' );
 				break;
 		}
@@ -1052,7 +1051,7 @@ class WXR_Importer extends \WP_Importer {
 	 * @param array  $post Attachment post details from WXR
 	 * @param string $url  URL to fetch attachment from
 	 *
-	 * @return int|WP_Error Post ID on success, \WP_Error otherwise
+	 * @return int|\WP_Error Post ID on success, \WP_Error otherwise
 	 */
 	protected function process_attachment( $post, $meta, $remote_url ) {
 		// try to use _wp_attached file for upload folder placement to ensure the same location as the export site
@@ -1108,27 +1107,13 @@ class WXR_Importer extends \WP_Importer {
 			$insecure_url                     = 'http' . substr( $remote_url, 5 );
 			$this->url_remap[ $insecure_url ] = $upload['url'];
 		}
-
-		if ( $this->options['aggressive_url_search'] ) {
-			// remap resized image URLs, works by stripping the extension and remapping the URL stub.
-			/*if ( preg_match( '!^image/!', $info['type'] ) ) {
-				$parts = pathinfo( $remote_url );
-				$name = basename( $parts['basename'], ".{$parts['extension']}" ); // PATHINFO_FILENAME in PHP 5.2
-
-				$parts_new = pathinfo( $upload['url'] );
-				$name_new = basename( $parts_new['basename'], ".{$parts_new['extension']}" );
-
-				$this->url_remap[$parts['dirname'] . '/' . $name] = $parts_new['dirname'] . '/' . $name_new;
-			}*/
-		}
-
 		return $post_id;
 	}
 
 	/**
 	 * Parse a meta node into meta data.
 	 *
-	 * @param DOMElement $node Parent node of meta data (typically `wp:postmeta` or `wp:commentmeta`).
+	 * @param \DOMElement $node Parent node of meta data (typically `wp:postmeta` or `wp:commentmeta`).
 	 *
 	 * @return array|null Meta data array on success, or null on error.
 	 */
@@ -1164,7 +1149,7 @@ class WXR_Importer extends \WP_Importer {
 	 * @param int   $post_id Post to associate with
 	 * @param array $post    Post data
 	 *
-	 * @return int|WP_Error Number of meta items imported on success, error otherwise.
+	 * @return int|\WP_Error Number of meta items imported on success, error otherwise.
 	 */
 	protected function process_post_meta( $meta, $post_id, $post ) {
 		if ( empty( $meta ) ) {
@@ -1222,7 +1207,7 @@ class WXR_Importer extends \WP_Importer {
 	/**
 	 * Parse a comment node into comment data.
 	 *
-	 * @param DOMElement $node Parent node of comment data (typically `wp:comment`).
+	 * @param \DOMElement $node Parent node of comment data (typically `wp:comment`).
 	 *
 	 * @return array Comment data array.
 	 */
@@ -1304,7 +1289,7 @@ class WXR_Importer extends \WP_Importer {
 	 * @param int   $post_id  Post to associate with.
 	 * @param array $post     Post data.
 	 *
-	 * @return int|WP_Error Number of comments imported on success, error otherwise.
+	 * @return int|\WP_Error Number of comments imported on success, error otherwise.
 	 */
 	protected function process_comments( $comments, $post_id, $post, $post_exists = false ) {
 
@@ -2068,11 +2053,11 @@ class WXR_Importer extends \WP_Importer {
 			}
 
 			// Run the update
-			$data['comment_ID'] = $comment_ID;
+			$data['comment_ID'] = $comment_id;
 			$result             = wp_update_comment( wp_slash( $data ) );
 			if ( empty( $result ) ) {
 				$this->logger->warning( sprintf(
-					__( 'Could not update comment #%d with mapped data', textdomain ),
+					__( 'Could not update comment #%d with mapped data', 'textdomain' ),
 					$comment_id
 				) );
 				continue;

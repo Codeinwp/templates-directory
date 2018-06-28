@@ -18,6 +18,7 @@ export default new Vuex.Store( {
 		importing: false,
 		previewData: {},
 		strings: themeisleSitesLibApi.i18ln,
+		homeUrl: themeisleSitesLibApi.homeUrl,
 		currentStep: 'inactive',
 	},
 	actions,

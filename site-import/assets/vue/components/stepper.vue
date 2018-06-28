@@ -25,8 +25,7 @@
 </script>
 
 <style scoped>
-	p {
-		font-size: 18px;
+	.right__content.importing .ti__stepper p {
 		color: #00b2f9;
 		text-transform: uppercase;
 		font-weight: 600;

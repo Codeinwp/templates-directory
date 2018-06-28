@@ -8,6 +8,8 @@ namespace ThemeIsle;
 
 /**
  * Class Quiet_Skin
+ *
+ * Silences plugin install and activate.
  */
 class Quiet_Skin extends \WP_Upgrader_Skin {
 	/**

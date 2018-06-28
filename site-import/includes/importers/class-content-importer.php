@@ -129,7 +129,6 @@ class Content_Importer {
 			require ABSPATH . '/wp-admin/includes/class-wp-importer.php';
 		}
 		require dirname( __FILE__ ) . '/helpers/wxr_importer/class-logger.php';
-		require dirname( __FILE__ ) . '/helpers/wxr_importer/class-logger-serversentevents.php';
 		require dirname( __FILE__ ) . '/helpers/wxr_importer/class-wxr-importer.php';
 		require dirname( __FILE__ ) . '/helpers/wxr_importer/class-wxr-import-info.php';
 	}

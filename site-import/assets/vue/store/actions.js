@@ -36,7 +36,6 @@ const doneImport = function ( { commit } ) {
 	commit( 'updateSteps', 'done' );
 	commit( 'setImportingState', false );
 	console.log( 'Import Done.' );
-	window.location.replace( themeisleSitesLibApi.homeUrl );
 };
 
 const installPlugins = function ( { commit }, data ) {

@@ -32,6 +32,10 @@ class Theme_Mods_Importer {
 	 * @param \WP_REST_Request $request
 	 */
 	public function import_theme_mods( \WP_REST_Request $request ) {
+		if( ! current_user_can( 'customize' ) ) {
+			wp_send_json_error( 'Not allowed to manage theme options' );
+		}
+
 		$params = $request->get_json_params();
 		$data   = $params['data'];
 		

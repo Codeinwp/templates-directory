@@ -27,40 +27,34 @@ class Rest_Server {
 	public function register_endpoints() {
 		register_rest_route( Plugin::API_ROOT, '/initialize_sites_library',
 			array(
-				'methods'  => 'GET',
+				'methods'  => \WP_REST_Server::READABLE,
 				'callback' => array( $this, 'init_library' ),
 			)
 		);
 		register_rest_route( Plugin::API_ROOT, '/install_plugins',
 			array(
-				'methods'  => 'POST',
+				'methods'  => \WP_REST_Server::EDITABLE,
 				'callback' => array( $this, 'run_plugin_importer' ),
 			)
 		);
 		register_rest_route( Plugin::API_ROOT, '/import_content',
 			array(
-				'methods'  => 'POST',
+				'methods'  => \WP_REST_Server::EDITABLE,
 				'callback' => array( $this, 'run_xml_importer' ),
 			)
 		);
 		register_rest_route( Plugin::API_ROOT, '/import_theme_mods',
 			array(
-				'methods'  => 'POST',
+				'methods'  => \WP_REST_Server::EDITABLE,
 				'callback' => array( $this, 'run_theme_mods_importer' ),
 			)
 		);
 		register_rest_route( Plugin::API_ROOT, '/import_widgets',
 			array(
-				'methods'  => 'POST',
+				'methods'  => \WP_REST_Server::EDITABLE,
 				'callback' => array( $this, 'run_widgets_importer' ),
 			)
 		);
-//		register_rest_route( Plugin::API_ROOT, '/reset_site',
-//			array(
-//				'methods'  => 'POST',
-//				'callback' => array( $this, 'run_website_reset' ),
-//			)
-//		);
 	}
 
 	/**
@@ -72,10 +66,9 @@ class Rest_Server {
 		$cached = get_transient( Plugin::STORAGE_TRANSIENT );
 
 		if ( ! empty( $cached ) ) {
-			print_r( 'Loading sites from cache...' . "\n" );
-
 			return $cached;
 		}
+
 		$theme_support = get_theme_support( 'themeisle-demo-import' );
 
 		if ( empty( $theme_support[0] ) || ! is_array( $theme_support[0] ) ) {
@@ -85,7 +78,13 @@ class Rest_Server {
 		$data = array();
 
 		foreach ( $theme_support[0] as $slug => $args ) {
-			$request = wp_remote_get( $args['url'] . '/wp-json/ti-demo-data/data' );
+			$request       = wp_remote_get( $args['url'] . '/wp-json/ti-demo-data/data' );
+
+			$response_code = wp_remote_retrieve_response_code( $request );
+
+			if ( $response_code !== 200 ) {
+				continue;
+			}
 
 			if ( empty( $request['body'] ) || ! isset( $request['body'] ) ) {
 				continue;
@@ -97,7 +96,7 @@ class Rest_Server {
 			$data[ $slug ]['title']      = $args['title'];
 		}
 
-		set_transient( Plugin::STORAGE_TRANSIENT, $data, 12 * HOUR_IN_SECONDS );
+		set_transient( Plugin::STORAGE_TRANSIENT, $data, 6 * HOUR_IN_SECONDS );
 
 		return $data;
 	}
@@ -108,7 +107,7 @@ class Rest_Server {
 	 * @param \WP_REST_Request $request
 	 */
 	public function run_plugin_importer( \WP_REST_Request $request ) {
-//		wp_send_json_error( 'kill it.' );
+//		wp_send_json( 'Skip Plugin Import.' );
 		require_once 'importers/class-plugin-importer.php';
 		if ( ! class_exists( '\ThemeIsle\Plugin_Importer' ) ) {
 			wp_send_json_error( 'Issue with plugin importer' );
@@ -123,7 +122,7 @@ class Rest_Server {
 	 * @param \WP_REST_Request $request
 	 */
 	public function run_xml_importer( \WP_REST_Request $request ) {
-//		wp_send_json_error( 'kill it.' );
+//		wp_send_json( 'Skip Content Import.' );
 		require_once 'importers/class-content-importer.php';
 		if ( ! class_exists( '\ThemeIsle\Content_Importer' ) ) {
 			wp_send_json_error( 'Issue with content importer' );
@@ -138,7 +137,7 @@ class Rest_Server {
 	 * @param \WP_REST_Request $request
 	 */
 	public function run_theme_mods_importer( \WP_REST_Request $request ) {
-//		wp_send_json_error( 'kill it.' );
+//		wp_send_json( 'Skip Theme Mods Import.' );
 		require_once 'importers/class-theme-mods-importer.php';
 		if ( ! class_exists( '\ThemeIsle\Theme_Mods_Importer' ) ) {
 			wp_send_json_error( 'Issue with theme mods importer' );
@@ -153,27 +152,12 @@ class Rest_Server {
 	 * @param \WP_REST_Request $request
 	 */
 	public function run_widgets_importer( \WP_REST_Request $request ) {
-//		wp_send_json_error( 'kill it.' );
+//		wp_send_json( 'Skip Widget Import.' );
 		require_once 'importers/class-widgets-importer.php';
 		if ( ! class_exists( '\ThemeIsle\Widgets_Importer' ) ) {
 			wp_send_json_error( 'Issue with theme mods importer' );
 		}
 		$theme_mods_importer = new Widgets_Importer();
 		$theme_mods_importer->import_widgets( $request );
-	}
-
-	/**
-	 * Run reset website.
-	 *
-	 * @param \WP_REST_Request $request
-	 */
-	public function run_website_reset( \WP_REST_Request $request ) {
-		wp_send_json_error( 'Feature suspended.' );
-		require_once 'class-reset-site.php';
-		if ( ! class_exists( '\ThemeIsle\Reset_Site' ) ) {
-			wp_send_json_error( 'Issue site reset.' );
-		}
-		$site_reset = new Reset_Site();
-		$site_reset->reset_site( $request );
 	}
 }

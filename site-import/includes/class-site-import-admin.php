@@ -69,7 +69,7 @@ class Site_Import_Admin {
 	 * Enqueue script and styles.
 	 */
 	public function enqueue() {
-		wp_register_script( 'themeisle-site-lib', plugin_dir_url( Plugin::get_dir() ) . '/assets/js/bundle.js', array(), Plugin::VERSION, true );
+		wp_register_script( 'themeisle-site-lib', plugin_dir_url( Plugin::get_dir() ) . '/assets/js/bundle.min.js', array(), Plugin::VERSION, true );
 
 		wp_localize_script( 'themeisle-site-lib', 'themeisleSitesLibApi', $this->localize_sites_library() );
 
@@ -85,16 +85,11 @@ class Site_Import_Admin {
 	 */
 	private function localize_sites_library() {
 		$api = array(
-			'root' => esc_url_raw( rest_url( Plugin::API_ROOT ) ),
+			'root'    => esc_url_raw( rest_url( Plugin::API_ROOT ) ),
+			'nonce'   => wp_create_nonce( 'wp_rest' ),
+			'homeUrl' => home_url(),
+			'i18ln'   => $this->get_strings(),
 		);
-		if ( current_user_can( 'manage_options' ) ) {
-			$api = array(
-				'root'  => esc_url_raw( rest_url( Plugin::API_ROOT ) ),
-				'nonce' => wp_create_nonce( 'wp_rest' ),
-			);
-		}
-		$api['homeUrl']     = home_url();
-		$api['i18ln']       = $this->get_strings();
 
 		return $api;
 	}
@@ -110,12 +105,16 @@ class Site_Import_Admin {
 			'import_btn'         => __( 'Import', 'textdomain' ),
 			'cancel_btn'         => __( 'Cancel', 'textdomain' ),
 			'loading'            => __( 'Loading', 'textdomain' ),
+			'go_to_site'         => __( 'View Website', 'textdomain' ),
+			'back'               => __( 'Back to Sites Library', 'textdomain' ),
+			'note'               => __( 'Note', 'textdomain' ),
 			'import_steps'       => array(
 				'plugins'    => __( 'Installing Plugins', 'textdomain' ),
 				'content'    => __( 'Importing Content', 'textdomain' ),
 				'theme_mods' => __( 'Setting Up Customizer', 'textdomain' ),
 				'widgets'    => __( 'Importing Widgets', 'textdomain' ),
 			),
+			'import_disclaimer'  => __( 'We recommend you backup your website content before attempting a full site import.', 'textdomain' ),
 			'import_description' => __( 'The import process will start installing necessary plugins, importing content (pages, posts, media), setting up customizer options and importing widgets.', 'textdomain' ),
 			'import_done'        => __( 'Content was successfully imported. Enjoy your new site!', 'textdomain' ),
 		);

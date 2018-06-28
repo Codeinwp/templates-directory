@@ -12586,7 +12586,7 @@ exports = module.exports = __webpack_require__(0)();
 
 
 // module
-exports.push([module.i, "\n\t.modal__header .title[_v-31fcf600] {\n\t\tmargin: 0;\n\t}\n\n\t.modal__header[_v-31fcf600] {\n\t\tpadding: 10px;\n\t}\n\n\t.modal__content[_v-31fcf600] {\n\t\tpadding: 10px;\n\t}\n\n\t.modal__footer[_v-31fcf600] {\n\t\tpadding: 10px;\n\t\ttext-align: right;\n\t}\n\n\th3[_v-31fcf600] {\n\t\ttext-align: center;\n\t\tfont-size: 17px;\n\t\tfont-weight: 500;\n\t\tmargin: 20px;\n\t\twidth: 100%;\n\t}\n\t.importing[_v-31fcf600] {\n\t\twidth: 100%;\n\t\ttext-align: center;\n\t}\n", ""]);
+exports.push([module.i, "\n\t.modal__header .title[_v-31fcf600] {\n\t\tmargin: 0;\n\t}\n\n\t.modal__header[_v-31fcf600] {\n\t\tpadding: 10px;\n\t}\n\n\t.modal__content[_v-31fcf600] {\n\t\tpadding: 10px;\n\t}\n\n\t.modal__footer[_v-31fcf600] {\n\t\tpadding: 10px;\n\t\ttext-align: right;\n\t}\n\n\th3[_v-31fcf600] {\n\t\tfont-size: 17px;\n\t\tfont-weight: 300;\n\t\tcolor: #444;\n\t\tmargin: 20px;\n\t\twidth: 100%;\n\t}\n\n\t.importing[_v-31fcf600] {\n\t\twidth: 100%;\n\t\ttext-align: center;\n\t}\n", ""]);
 
 // exports
 
@@ -12618,7 +12618,8 @@ exports.default = {
 	name: 'import-modal',
 	data: function data() {
 		return {
-			strings: this.$store.state.strings
+			strings: this.$store.state.strings,
+			homeUrl: this.$store.state.homeUrl
 		};
 	},
 	computed: {
@@ -12634,9 +12635,13 @@ exports.default = {
 	},
 	methods: {
 		closeModal: function closeModal() {
-			if (!this.importing) {
-				this.$store.commit('showImportModal', false);
+			if (this.importing) {
+				return false;
 			}
+			if (this.currentStep === 'done') {
+				return false;
+			}
+			this.$store.commit('showImportModal', false);
 		},
 		startImport: function startImport() {
 			this.$store.dispatch('importSite', {
@@ -12652,6 +12657,15 @@ exports.default = {
 				},
 				widgets: this.item.widgets
 			});
+		},
+		redirectToHome: function redirectToHome() {
+			window.location.replace(this.homeUrl);
+		},
+		resetImport: function resetImport() {
+			this.$store.commit('showImportModal', false);
+			this.$store.commit('showPreview', false);
+			this.$store.commit('populatePreview', {});
+			this.$store.commit('updateSteps', 'inactive');
 		}
 	},
 	directives: {
@@ -12682,12 +12696,13 @@ exports.default = {
 	// 	}
 	//
 	// 	h3 {
-	// 		text-align: center;
 	// 		font-size: 17px;
-	// 		font-weight: 500;
+	// 		font-weight: 300;
+	// 		color: #444;
 	// 		margin: 20px;
 	// 		width: 100%;
 	// 	}
+	//
 	// 	.importing {
 	// 		width: 100%;
 	// 		text-align: center;
@@ -12696,17 +12711,21 @@ exports.default = {
 
 }; // <template>
 // 	<div class="import-modal__wrapper">
-// 		<div class="modal" v-on-clickaway="closeModal">
+// 		<div class="modal__item" v-on-clickaway="closeModal">
 // 			<div class="modal__header">
 // 				<h4 class="title ellipsis">{{strings.import_btn}}: {{item.title}}</h4>
 // 			</div>
 // 			<hr>
-// 			<div class="modal__content">
+// 			<div class="modal__content" v-bind:class="currentStep === 'done' ? 'import__done' : ''">
 // 				<template v-if="currentStep !== 'done'">
 // 					<div class="left__content" v-if="! importing">
 // 						<img :src="item.screenshot" :alt="item.title" class="screenshot">
 // 					</div>
-// 					<div class="right__content" v-if="! importing"><p>{{strings.import_description}}</p></div>
+// 					<div class="right__content" v-if="! importing">
+// 						<p class="import__disclaimer"><strong>{{strings.note}}:</strong> {{strings.import_disclaimer}}
+// 						</p>
+// 						<p class="import__description">{{strings.import_description}}</p>
+// 					</div>
 // 					<div class="right__content importing" v-else>
 // 						<Stepper>
 // 						</Stepper>
@@ -12714,18 +12733,18 @@ exports.default = {
 // 						</Loader>
 // 					</div>
 // 				</template>
-// 				<template v-else>
-// 					<h3>{{strings.import_done}}</h3>
-// 				</template>
+// 				<h3 v-else>{{strings.import_done}}</h3>
 // 			</div>
 // 			<hr>
-// 			<div class="modal__footer" v-if="! importing && currentStep !== 'done'">
-// 				<button class="button button-secondary" v-on:click="closeModal">
-// 					{{strings.cancel_btn}}
-// 				</button>
-// 				<button class="button button-primary" v-on:click="startImport">
-// 					{{strings.import_btn}}
-// 				</button>
+// 			<div class="modal__footer" v-if="! importing">
+// 				<template v-if="currentStep !== 'done'">
+// 					<button class="button button-secondary" v-on:click="closeModal">{{strings.cancel_btn}}</button>
+// 					<button class="button button-primary" v-on:click="startImport">{{strings.import_btn}}</button>
+// 				</template>
+// 				<div v-else class="after__actions">
+// 					<button class="button button-secondary" v-on:click="resetImport">{{strings.back}}</button>
+// 					<button class="button button-primary" v-on:click="redirectToHome">{{strings.go_to_site}}</button>
+// 				</div>
 // 			</div>
 // 		</div>
 // 	</div>
@@ -12881,7 +12900,7 @@ exports = module.exports = __webpack_require__(0)();
 
 
 // module
-exports.push([module.i, "\n\tp[_v-5b092ca6] {\n\t\tfont-size: 18px;\n\t\tcolor: #00b2f9;\n\t\ttext-transform: uppercase;\n\t\tfont-weight: 600;\n\t}\n", ""]);
+exports.push([module.i, "\n\t.right__content.importing .ti__stepper p[_v-5b092ca6] {\n\t\tcolor: #00b2f9;\n\t\ttext-transform: uppercase;\n\t\tfont-weight: 600;\n\t}\n", ""]);
 
 // exports
 
@@ -12919,8 +12938,7 @@ module.exports = {
 	// </script>
 	//
 	// <style scoped>
-	// 	p {
-	// 		font-size: 18px;
+	// 	.right__content.importing .ti__stepper p {
 	// 		color: #00b2f9;
 	// 		text-transform: uppercase;
 	// 		font-weight: 600;
@@ -12939,7 +12957,7 @@ module.exports = "\n\t<div class=\"ti__stepper\" _v-5b092ca6=\"\">\n\t\t<templat
 /* 39 */
 /***/ (function(module, exports) {
 
-module.exports = "\n\t<div class=\"import-modal__wrapper\" _v-31fcf600=\"\">\n\t\t<div class=\"modal\" v-on-clickaway=\"closeModal\" _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__header\" _v-31fcf600=\"\">\n\t\t\t\t<h4 class=\"title ellipsis\" _v-31fcf600=\"\">{{strings.import_btn}}: {{item.title}}</h4>\n\t\t\t</div>\n\t\t\t<hr _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__content\" _v-31fcf600=\"\">\n\t\t\t\t<template v-if=\"currentStep !== 'done'\" _v-31fcf600=\"\">\n\t\t\t\t\t<div class=\"left__content\" v-if=\"! importing\" _v-31fcf600=\"\">\n\t\t\t\t\t\t<img :src=\"item.screenshot\" :alt=\"item.title\" class=\"screenshot\" _v-31fcf600=\"\">\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"right__content\" v-if=\"! importing\" _v-31fcf600=\"\"><p _v-31fcf600=\"\">{{strings.import_description}}</p></div>\n\t\t\t\t\t<div class=\"right__content importing\" v-else=\"\" _v-31fcf600=\"\">\n\t\t\t\t\t\t<stepper _v-31fcf600=\"\">\n\t\t\t\t\t\t</stepper>\n\t\t\t\t\t\t<loader v-if=\"importing\" _v-31fcf600=\"\">\n\t\t\t\t\t\t</loader>\n\t\t\t\t\t</div>\n\t\t\t\t</template>\n\t\t\t\t<template v-else=\"\" _v-31fcf600=\"\">\n\t\t\t\t\t<h3 _v-31fcf600=\"\">{{strings.import_done}}</h3>\n\t\t\t\t</template>\n\t\t\t</div>\n\t\t\t<hr _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__footer\" v-if=\"! importing &amp;&amp; currentStep !== 'done'\" _v-31fcf600=\"\">\n\t\t\t\t<button class=\"button button-secondary\" v-on:click=\"closeModal\" _v-31fcf600=\"\">\n\t\t\t\t\t{{strings.cancel_btn}}\n\t\t\t\t</button>\n\t\t\t\t<button class=\"button button-primary\" v-on:click=\"startImport\" _v-31fcf600=\"\">\n\t\t\t\t\t{{strings.import_btn}}\n\t\t\t\t</button>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n";
+module.exports = "\n\t<div class=\"import-modal__wrapper\" _v-31fcf600=\"\">\n\t\t<div class=\"modal__item\" v-on-clickaway=\"closeModal\" _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__header\" _v-31fcf600=\"\">\n\t\t\t\t<h4 class=\"title ellipsis\" _v-31fcf600=\"\">{{strings.import_btn}}: {{item.title}}</h4>\n\t\t\t</div>\n\t\t\t<hr _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__content\" v-bind:class=\"currentStep === 'done' ? 'import__done' : ''\" _v-31fcf600=\"\">\n\t\t\t\t<template v-if=\"currentStep !== 'done'\" _v-31fcf600=\"\">\n\t\t\t\t\t<div class=\"left__content\" v-if=\"! importing\" _v-31fcf600=\"\">\n\t\t\t\t\t\t<img :src=\"item.screenshot\" :alt=\"item.title\" class=\"screenshot\" _v-31fcf600=\"\">\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"right__content\" v-if=\"! importing\" _v-31fcf600=\"\">\n\t\t\t\t\t\t<p class=\"import__disclaimer\" _v-31fcf600=\"\"><strong _v-31fcf600=\"\">{{strings.note}}:</strong> {{strings.import_disclaimer}}\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t<p class=\"import__description\" _v-31fcf600=\"\">{{strings.import_description}}</p>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"right__content importing\" v-else=\"\" _v-31fcf600=\"\">\n\t\t\t\t\t\t<stepper _v-31fcf600=\"\">\n\t\t\t\t\t\t</stepper>\n\t\t\t\t\t\t<loader v-if=\"importing\" _v-31fcf600=\"\">\n\t\t\t\t\t\t</loader>\n\t\t\t\t\t</div>\n\t\t\t\t</template>\n\t\t\t\t<h3 v-else=\"\" _v-31fcf600=\"\">{{strings.import_done}}</h3>\n\t\t\t</div>\n\t\t\t<hr _v-31fcf600=\"\">\n\t\t\t<div class=\"modal__footer\" v-if=\"! importing\" _v-31fcf600=\"\">\n\t\t\t\t<template v-if=\"currentStep !== 'done'\" _v-31fcf600=\"\">\n\t\t\t\t\t<button class=\"button button-secondary\" v-on:click=\"closeModal\" _v-31fcf600=\"\">{{strings.cancel_btn}}</button>\n\t\t\t\t\t<button class=\"button button-primary\" v-on:click=\"startImport\" _v-31fcf600=\"\">{{strings.import_btn}}</button>\n\t\t\t\t</template>\n\t\t\t\t<div v-else=\"\" class=\"after__actions\" _v-31fcf600=\"\">\n\t\t\t\t\t<button class=\"button button-secondary\" v-on:click=\"resetImport\" _v-31fcf600=\"\">{{strings.back}}</button>\n\t\t\t\t\t<button class=\"button button-primary\" v-on:click=\"redirectToHome\" _v-31fcf600=\"\">{{strings.go_to_site}}</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n";
 
 /***/ }),
 /* 40 */
@@ -12997,6 +13015,7 @@ exports.default = new _vuex2.default.Store({
 		importing: false,
 		previewData: {},
 		strings: themeisleSitesLibApi.i18ln,
+		homeUrl: themeisleSitesLibApi.homeUrl,
 		currentStep: 'inactive'
 	},
 	actions: _actions2.default,
@@ -14014,7 +14033,6 @@ var doneImport = function doneImport(_ref4) {
 	commit('updateSteps', 'done');
 	commit('setImportingState', false);
 	console.log('Import Done.');
-	window.location.replace(themeisleSitesLibApi.homeUrl);
 };
 
 var installPlugins = function installPlugins(_ref5, data) {

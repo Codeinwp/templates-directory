@@ -99,6 +99,10 @@ class Plugin_Importer {
 			return $plugin_dir . '/css-editor.php';
 		}
 
+		if( $slug === 'contact-form-7') {
+			return $plugin_dir . '/wp-contact-form-7.php';
+		}
+
 		$plugin_path = $plugin_dir . '/' . $slug . '.php';
 
 		if ( ! file_exists( $plugin_path ) ) {
