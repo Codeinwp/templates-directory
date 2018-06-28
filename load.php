@@ -9,4 +9,3 @@
  */
 
 require_once( dirname( __FILE__ ) . '/class-page-templates-directory.php' );
-require_once( dirname( __FILE__ ) . '/site-import/class-site-import.php' );
