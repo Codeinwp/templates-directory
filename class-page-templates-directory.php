@@ -329,9 +329,10 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			require_once( ABSPATH . 'wp-admin' . '/includes/image.php' );
 
 			$template                   = download_url( esc_url( $_POST['template_url'] ) );
+			$name                       = $_POST['template_name'];
 			$_FILES['file']['tmp_name'] = $template;
 			$elementor                  = new \Elementor\TemplateLibrary\Source_Local;
-			$elementor->import_template();
+			$elementor->import_template( $name, $template );
 			unlink( $template );
 
 			$args = array(
