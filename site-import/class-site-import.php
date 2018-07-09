@@ -53,9 +53,16 @@ class Site_Import {
 		if ( ! $this->should_load() ) {
 			return;
 		}
-
+		add_action( 'after_switch_theme', array( $this, 'bust_cache' ) );
 		$this->setup_admin();
 		$this->setup_api();
+	}
+
+	/**
+	 * Bust cache after theme was switched.
+	 */
+	public function bust_cache() {
+		delete_transient( $this::STORAGE_TRANSIENT );
 	}
 
 	/**

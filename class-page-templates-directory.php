@@ -503,7 +503,9 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * Load site import module.
 		 */
 		public function load_site_import() {
-			require_once( plugin_dir_path( $this->get_dir() ) . $this->slug . '/site-import/class-site-import.php' );
+			if( ! class_exists( '\ThemeIsle\Site_Import' ) ) {
+				require_once( plugin_dir_path( $this->get_dir() ) . $this->slug . '/site-import/class-site-import.php' );
+			}
 			if ( class_exists( '\ThemeIsle\Site_Import' ) ) {
 				Site_Import::instance();
 			}
