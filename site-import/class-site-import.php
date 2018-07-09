@@ -59,10 +59,10 @@ class Site_Import {
 	}
 
 	/**
-	 * Bust cache after theme was switched.
+	 * Bust cache.
 	 */
 	public function bust_cache() {
-		delete_transient( $this::STORAGE_TRANSIENT );
+		delete_transient( Site_Import::STORAGE_TRANSIENT );
 	}
 
 	/**

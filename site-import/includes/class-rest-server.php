@@ -55,6 +55,12 @@ class Rest_Server {
 				'callback' => array( $this, 'run_widgets_importer' ),
 			)
 		);
+		register_rest_route( Plugin::API_ROOT, '/bust_cache',
+			array(
+				'methods'  => \WP_REST_Server::READABLE,
+				'callback' => array( $this, 'bust_cache' ),
+			)
+		);
 	}
 
 	/**
@@ -159,5 +165,10 @@ class Rest_Server {
 		}
 		$theme_mods_importer = new Widgets_Importer();
 		$theme_mods_importer->import_widgets( $request );
+	}
+
+	public function bust_cache( \WP_REST_Request $request ) {
+		delete_transient( Plugin::STORAGE_TRANSIENT );
+		wp_send_json_success( 'Cache Busted' );
 	}
 }

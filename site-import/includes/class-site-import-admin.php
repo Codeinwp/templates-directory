@@ -108,6 +108,7 @@ class Site_Import_Admin {
 			'go_to_site'         => __( 'View Website', 'textdomain' ),
 			'back'               => __( 'Back to Sites Library', 'textdomain' ),
 			'note'               => __( 'Note', 'textdomain' ),
+			'refresh'            => __( 'Refresh', 'textdomain' ),
 			'import_steps'       => array(
 				'plugins'    => __( 'Installing Plugins', 'textdomain' ),
 				'content'    => __( 'Importing Content', 'textdomain' ),

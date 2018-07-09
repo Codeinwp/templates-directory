@@ -1,10 +1,15 @@
 <template>
 	<div>
-		<Loader v-if="isLoading" :loading-message="loadingString"></Loader>
-		<div v-else class="ti-sites-lib">
+		<Loader v-if="isLoading" :loading-message="strings.loading"></Loader>
+		<div v-else class="__sites">
+		<div class="ti-sites-lib">
 			<div v-for="site in sites">
 				<SiteItem :site_data="site"></SiteItem>
 			</div>
+		</div>
+		<div class="site-import__footer">
+			<button class="button button-secondary" v-on:click="refreshSites">{{ strings.refresh }}</button>
+		</div>
 			<Preview v-if="previewOpen"></Preview>
 		</div>
 	</div>
@@ -19,7 +24,7 @@
 		name: 'app',
 		data: function () {
 			return {
-				strings: this.$store.strings
+				strings: this.$store.state.strings,
 			}
 		},
 		computed: {
@@ -32,9 +37,11 @@
 			previewOpen: function () {
 				return this.$store.state.previewOpen
 			},
-			loadingString: function () {
-				return this.$store.state.strings.loading;
-			},
+		},
+		methods: {
+			refreshSites() {
+				this.$store.dispatch( 'bustCache', { req: 'Bust Cache', data: {} } );
+			}
 		},
 		components: {
 			Loader,

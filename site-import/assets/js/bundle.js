@@ -11922,7 +11922,7 @@ module.exports = {
 	name: 'app',
 	data: function data() {
 		return {
-			strings: this.$store.strings
+			strings: this.$store.state.strings
 		};
 	},
 	computed: {
@@ -11934,9 +11934,11 @@ module.exports = {
 		},
 		previewOpen: function previewOpen() {
 			return this.$store.state.previewOpen;
-		},
-		loadingString: function loadingString() {
-			return this.$store.state.strings.loading;
+		}
+	},
+	methods: {
+		refreshSites: function refreshSites() {
+			this.$store.dispatch('bustCache', { req: 'Bust Cache', data: {} });
 		}
 	},
 	components: {
@@ -11950,11 +11952,16 @@ module.exports = {
 
 }; // <template>
 // 	<div>
-// 		<Loader v-if="isLoading" :loading-message="loadingString"></Loader>
-// 		<div v-else class="ti-sites-lib">
+// 		<Loader v-if="isLoading" :loading-message="strings.loading"></Loader>
+// 		<div v-else class="__sites">
+// 		<div class="ti-sites-lib">
 // 			<div v-for="site in sites">
 // 				<SiteItem :site_data="site"></SiteItem>
 // 			</div>
+// 		</div>
+// 		<div class="site-import__footer">
+// 			<button class="button button-secondary" v-on:click="refreshSites">{{ strings.refresh }}</button>
+// 		</div>
 // 			<Preview v-if="previewOpen"></Preview>
 // 		</div>
 // 	</div>
@@ -12969,7 +12976,7 @@ module.exports = "\n\t<div class=\"ti-sites-lib__wrap\" _v-9debd3c6=\"\">\n\t\t<
 /* 41 */
 /***/ (function(module, exports) {
 
-module.exports = "\n\t<div>\n\t\t<Loader v-if=\"isLoading\" :loading-message=\"loadingString\"></Loader>\n\t\t<div v-else class=\"ti-sites-lib\">\n\t\t\t<div v-for=\"site in sites\">\n\t\t\t\t<SiteItem :site_data=\"site\"></SiteItem>\n\t\t\t</div>\n\t\t\t<Preview v-if=\"previewOpen\"></Preview>\n\t\t</div>\n\t</div>\n";
+module.exports = "\n\t<div>\n\t\t<Loader v-if=\"isLoading\" :loading-message=\"strings.loading\"></Loader>\n\t\t<div v-else class=\"__sites\">\n\t\t<div class=\"ti-sites-lib\">\n\t\t\t<div v-for=\"site in sites\">\n\t\t\t\t<SiteItem :site_data=\"site\"></SiteItem>\n\t\t\t</div>\n\t\t</div>\n\t\t<div class=\"site-import__footer\">\n\t\t\t<button class=\"button button-secondary\" v-on:click=\"refreshSites\">{{ strings.refresh }}</button>\n\t\t</div>\n\t\t\t<Preview v-if=\"previewOpen\"></Preview>\n\t\t</div>\n\t</div>\n";
 
 /***/ }),
 /* 42 */
@@ -13994,8 +14001,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* global themeisleSitesLibApi, console */
 _vue2.default.use(_vueResource2.default);
 
-var initialize = function initialize(_ref, data) {
+var bustCache = function bustCache(_ref, data) {
 	var commit = _ref.commit;
+
+	commit('setAjaxState', true);
+	console.log('Busting Cache.');
+	_vue2.default.http({
+		url: themeisleSitesLibApi.root + '/bust_cache',
+		method: 'GET',
+		headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
+		params: { 'req': data.req },
+		body: data.data,
+		responseType: 'json'
+	}).then(function (response) {
+		if (response.ok) {
+			initialize({ commit: commit }, data);
+		}
+	});
+};
+
+var initialize = function initialize(_ref2, data) {
+	var commit = _ref2.commit;
 
 	commit('setAjaxState', true);
 	console.log('Fetching sites.');
@@ -14014,29 +14040,29 @@ var initialize = function initialize(_ref, data) {
 	});
 };
 
-var importSite = function importSite(_ref2, data) {
-	var commit = _ref2.commit;
+var importSite = function importSite(_ref3, data) {
+	var commit = _ref3.commit;
 
 	startImport({ commit: commit }, data);
 };
 
-var startImport = function startImport(_ref3, data) {
-	var commit = _ref3.commit;
+var startImport = function startImport(_ref4, data) {
+	var commit = _ref4.commit;
 
 	commit('setImportingState', true);
 	installPlugins({ commit: commit }, data);
 };
 
-var doneImport = function doneImport(_ref4) {
-	var commit = _ref4.commit;
+var doneImport = function doneImport(_ref5) {
+	var commit = _ref5.commit;
 
 	commit('updateSteps', 'done');
 	commit('setImportingState', false);
 	console.log('Import Done.');
 };
 
-var installPlugins = function installPlugins(_ref5, data) {
-	var commit = _ref5.commit;
+var installPlugins = function installPlugins(_ref6, data) {
+	var commit = _ref6.commit;
 
 	commit('updateSteps', 'plugins');
 	_vue2.default.http({
@@ -14060,8 +14086,8 @@ var installPlugins = function installPlugins(_ref5, data) {
 	});
 };
 
-var importContent = function importContent(_ref6, data) {
-	var commit = _ref6.commit;
+var importContent = function importContent(_ref7, data) {
+	var commit = _ref7.commit;
 
 	commit('updateSteps', 'content');
 	_vue2.default.http({
@@ -14088,8 +14114,8 @@ var importContent = function importContent(_ref6, data) {
 	});
 };
 
-var importThemeMods = function importThemeMods(_ref7, data) {
-	var commit = _ref7.commit;
+var importThemeMods = function importThemeMods(_ref8, data) {
+	var commit = _ref8.commit;
 
 	commit('updateSteps', 'theme_mods');
 	_vue2.default.http({
@@ -14113,8 +14139,8 @@ var importThemeMods = function importThemeMods(_ref7, data) {
 	});
 };
 
-var importWidgets = function importWidgets(_ref8, data) {
-	var commit = _ref8.commit;
+var importWidgets = function importWidgets(_ref9, data) {
+	var commit = _ref9.commit;
 
 	commit('updateSteps', 'widgets');
 	_vue2.default.http({
@@ -14140,7 +14166,8 @@ var importWidgets = function importWidgets(_ref8, data) {
 
 exports.default = {
 	initialize: initialize,
-	importSite: importSite
+	importSite: importSite,
+	bustCache: bustCache
 };
 
 /***/ }),

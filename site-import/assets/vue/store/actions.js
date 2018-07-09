@@ -5,6 +5,23 @@ import VueResource from 'vue-resource';
 
 Vue.use( VueResource );
 
+const bustCache = function ( { commit }, data ) {
+	commit( 'setAjaxState', true );
+	console.log( 'Busting Cache.' );
+	Vue.http( {
+		url: themeisleSitesLibApi.root + '/bust_cache',
+		method: 'GET',
+		headers: { 'X-WP-Nonce': themeisleSitesLibApi.nonce },
+		params: { 'req': data.req },
+		body: data.data,
+		responseType: 'json'
+	} ).then( function ( response ) {
+		if ( response.ok ) {
+			initialize( { commit }, data );
+		}
+	} );
+};
+
 const initialize = function ( { commit }, data ) {
 	commit( 'setAjaxState', true );
 	console.log( 'Fetching sites.' );
@@ -135,5 +152,6 @@ const importWidgets = function ( { commit }, data ) {
 
 export default {
 	initialize,
-	importSite
+	importSite,
+	bustCache
 };
