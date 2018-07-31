@@ -1,5 +1,7 @@
 .obfx-template-browser {
+	display: grid;
 	padding: 35px 0 0;
+	grid-gap: 2em;
 }
 
 .obfx-template-browser .template-name {
@@ -11,11 +13,9 @@
 }
 
 .obfx-template {
-	float: left;
 	position: relative;
 	box-sizing: border-box;
-	width: 30.6%;
-	margin: 0 4% 4% 0;
+
 	border: 1px solid #ddd;
 	background: #fff;
 	box-shadow: 0 1px 1px -1px rgba(0,0,0,0.1);
@@ -314,33 +314,21 @@
 	margin: 3px 5px 0 -2px;
 }
 
-@media only screen and (min-width: 1640px) {
-	.obfx-template {
-		width: 22.7%;
-		margin: 0 3% 3% 0;
-	}
-
-	.obfx-template:nth-child(3n) {
-		margin-right: 3%;
-	}
-
-	.obfx-template:nth-child(4n) {
-		margin-right: 0;
+@media only screen and (max-width: 2000px) {
+	.obfx-template-browser {
+		grid-template-columns: 1fr 1fr 1fr 1fr;
 	}
 }
 
-@media only screen and (max-width: 1120px) {
-	.obfx-template {
-		width: 47.5%;
-		margin: 0 3% 3% 0;
+@media only screen and (max-width: 1450px) {
+	.obfx-template-browser {
+		grid-template-columns: 1fr 1fr 1fr;
 	}
+}
 
-	.obfx-template:nth-child(3n) {
-		margin-right: 3%;
-	}
-
-	.obfx-template:nth-child(even) {
-		margin-right: 0;
+@media only screen and (max-width: 1000px) {
+	.obfx-template-browser {
+		grid-template-columns: 1fr 1fr;
 	}
 }
 
@@ -348,19 +336,13 @@
 	.obfx-template-preview .wp-full-overlay-sidebar {
 		width: 100%;
 	}
+	.obfx-template-browser {
+		grid-template-columns: 1fr;
+	}
 }
 
 @media only screen and (min-width: 2000px) {
-	.obfx-template {
-		width: 17.6%;
-		margin: 0 3% 3% 0;
-	}
-
-	.obfx-template:nth-child(4n) {
-		margin-right: 3%;
-	}
-
-	.obfx-template:nth-child(5n) {
-		margin-right: 0;
+	.obfx-template-browser {
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 	}
 }
