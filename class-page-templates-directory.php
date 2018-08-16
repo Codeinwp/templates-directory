@@ -256,6 +256,13 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 					'screenshot'  => esc_url( $this->get_source_url() . 'zerif-elementor/screenshot.jpg' ),
 					'import_file' => esc_url( $this->get_source_url() . 'zerif-elementor/template.json' ),
 				),
+				'notify'              => array(
+					'title'       => __( 'Notify - Landing Page', 'textdomain' ),
+					'description' => __( 'A beautiful landing page to showcase your new application. It has a features section to present your app, a subscribe section where you can also add a video showcasing your new app and a testimonials section so you can present the feedback from your beta testers.', 'textdomain' ),
+					'demo_url'    => 'https://demo.themeisle.com/hestia-pro-demo-content/notify-elementor/',
+					'screenshot'  => esc_url( $this->get_source_url() . 'zerif-elementor/screenshot.jpg' ),
+					'import_file' => esc_url( $this->get_source_url() . 'zerif-elementor/template.json' ),
+				)
 			);
 
 			foreach ( $templates_list as $template => $properties ) {
