@@ -8,6 +8,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		/**
 		 * @var PageTemplatesDirectory
 		 */
+
 		protected static $instance = null;
 
 		/**
@@ -115,15 +116,18 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 *
 		 * @return array|bool|\WP_Error
 		 */
-		public function fetch_templates() {
+		public function fetch_templates( \WP_REST_Request $request ) {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return false;
 			}
-			if ( empty ( $_POST['plugin_slug'] ) ) {
+
+			$params = $request->get_params();
+
+			if ( empty ( $params['plugin_slug'] ) ) {
 				return false;
 			}
 
-			$plugin_slug = $_POST['plugin_slug'];
+			$plugin_slug = $params['plugin_slug'];
 			$query_args  = array( 'license' => '', 'url' => get_home_url(), 'name' => $plugin_slug );
 
 			$license = get_option( 'eaw_premium_license_data', '' );
@@ -333,16 +337,20 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		/**
 		 * Utility method to call Elementor import routine.
 		 */
-		public function import_elementor() {
+		public function import_elementor(\WP_REST_Request $request ) {
 			if ( ! defined( 'ELEMENTOR_VERSION' ) ) {
 				return 'no-elementor';
 			}
 
+			$params = $request->get_params();
+			$template_name = $params['template_name'];
+			$template_url = $params['template_url'];
+
 			require_once( ABSPATH . 'wp-admin' . '/includes/file.php' );
 			require_once( ABSPATH . 'wp-admin' . '/includes/image.php' );
 
-			$template                   = download_url( esc_url( $_POST['template_url'] ) );
-			$name                       = $_POST['template_name'];
+			$template                   = download_url( esc_url( $template_url ) );
+			$name                       = $template_name;
 			$_FILES['file']['tmp_name'] = $template;
 			$elementor                  = new \Elementor\TemplateLibrary\Source_Local;
 			$elementor->import_template( $name, $template );
@@ -384,7 +392,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			// Create post object
 			$new_template_page = array(
 				'post_type'     => 'page',
-				'post_title'    => $_POST['template_name'],
+				'post_title'    => $template_name,
 				'post_status'   => 'publish',
 				'post_content'  => $page_content,
 				'meta_input'    => $elementor_metas,
