@@ -58,7 +58,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		public function enqueue_template_dir_scripts() {
 			$current_screen = get_current_screen();
 			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' || $current_screen->id === 'sizzify_page_sizzify_template_dir' ) {
-				if( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
+				if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
 					$plugin_slug = 'obfx';
 				} else {
 					$plugin_slug = 'sizzify';
@@ -95,12 +95,18 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function register_endpoints() {
 			register_rest_route( $this->slug, '/import_elementor', array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'import_elementor' ),
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'import_elementor' ),
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
 			) );
 			register_rest_route( $this->slug, '/fetch_templates', array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'fetch_templates' ),
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'fetch_templates' ),
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
 			) );
 		}
 
@@ -113,45 +119,45 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return false;
 			}
-			if( empty ( $_POST['plugin_slug'] ) ) {
+			if ( empty ( $_POST['plugin_slug'] ) ) {
 				return false;
 			}
 
 			$plugin_slug = $_POST['plugin_slug'];
-			$query_args    = array( 'license' => '', 'url' => get_home_url(), 'name' => $plugin_slug );
+			$query_args  = array( 'license' => '', 'url' => get_home_url(), 'name' => $plugin_slug );
 
-			$license = get_option('eaw_premium_license_data','');
+			$license = get_option( 'eaw_premium_license_data', '' );
 
-			if( ! empty ( $license ) ) {
-				$license= isset($license->key) ? $license->key :'';
+			if ( ! empty ( $license ) ) {
+				$license               = isset( $license->key ) ? $license->key : '';
 				$query_args['license'] = $license;
-				$query_args['_'] = time();
+				$query_args['_']       = time();
 			}
 			$url = add_query_arg( $query_args, 'https://themeisle.com/?edd_action=get_templates' );
 
-			$request = wp_remote_retrieve_body( wp_remote_post( esc_url_raw( $url ) ) );
+			$request  = wp_remote_retrieve_body( wp_remote_post( esc_url_raw( $url ) ) );
 			$response = json_decode( $request, true );
 
-			if( ! empty( $response ) ) {
+			if ( ! empty( $response ) ) {
 				update_option( $plugin_slug . '_synced_templates', $response );
 			}
 			die();
 		}
 
-		public function filter_templates($templates) {
+		public function filter_templates( $templates ) {
 			$current_screen = get_current_screen();
 			if ( $current_screen->id === 'orbit-fox_page_obfx_template_dir' ) {
 				$fetched = get_option( 'obfx_synced_templates' );
 			} else {
 				$fetched = get_option( 'sizzify_synced_templates' );
 			}
-			if( empty( $fetched ) ) {
+			if ( empty( $fetched ) ) {
 				return $templates;
 			}
-			if( ! is_array( $fetched ) ) {
+			if ( ! is_array( $fetched ) ) {
 				return $templates;
 			}
-			$new_templates = array_merge( $templates,$fetched['templates'] );
+			$new_templates = array_merge( $templates, $fetched['templates'] );
 
 			return $new_templates;
 		}
@@ -242,21 +248,21 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 					'screenshot'  => esc_url( $this->get_source_url() . 'mocha-elementor/screenshot.png' ),
 					'import_file' => esc_url( $this->get_source_url() . 'mocha-elementor/template.json' ),
 				),
-				'rik-landing'              => array(
+				'rik-landing'                  => array(
 					'title'       => __( 'Rik - Landing Page', 'textdomain' ),
 					'description' => __( 'This is a clean Landing page, ready to be used for an app presentation. It features beautiful gradients and great layouts for showcasing your product.', 'textdomain' ),
 					'demo_url'    => 'https://demo.themeisle.com/hestia-pro-demo-content/rik-elementor/',
 					'screenshot'  => esc_url( $this->get_source_url() . 'rik-elementor/screenshot.jpg' ),
 					'import_file' => esc_url( $this->get_source_url() . 'rik-elementor/template.json' ),
 				),
-				'zerif-lite'              => array(
+				'zerif-lite'                   => array(
 					'title'       => __( 'Zerif Lite - One Page Template', 'textdomain' ),
 					'description' => __( 'A friendly one-page WordPress multipurpose theme, with a full-width image in the background and a simple white menu bar at the top. It comes with an elegant and modern design, which could fit very well any kind of business. Zerif Lite has an interactive and colorful interface, with classy parallax effect and lively animations. You can use it for your online shop as well.', 'textdomain' ),
 					'demo_url'    => 'https://demo.themeisle.com/hestia-pro-demo-content/zerif-lite/',
 					'screenshot'  => esc_url( $this->get_source_url() . 'zerif-elementor/screenshot.jpg' ),
 					'import_file' => esc_url( $this->get_source_url() . 'zerif-elementor/template.json' ),
 				),
-				'notify'              => array(
+				'notify'                       => array(
 					'title'       => __( 'Notify - Landing Page', 'textdomain' ),
 					'description' => __( 'A beautiful landing page to showcase your new application. It has a features section to present your app, a subscribe section where you can also add a video showcasing your new app and a testimonials section so you can present the feedback from your beta testers.', 'textdomain' ),
 					'demo_url'    => 'https://demo.themeisle.com/hestia-pro-demo-content/notify-elementor/',
@@ -305,7 +311,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 */
 		public function add_menu_page() {
 			$products = apply_filters( 'obfx_template_dir_products', array() );
-			foreach($products as $product){
+			foreach ( $products as $product ) {
 				add_submenu_page(
 					$product['parent_page_slug'], $product['directory_page_title'], __( 'Template Directory', 'textdomain' ), 'manage_options', $product['page_slug'],
 					array( $this, 'render_admin_page' )
@@ -522,7 +528,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * @access  protected
 		 *
 		 * @param   string $view_name The view name w/o the `-tpl.php` part.
-		 * @param   array $args An array of arguments to be passed to the view.
+		 * @param   array  $args      An array of arguments to be passed to the view.
 		 *
 		 * @return string
 		 */
@@ -554,7 +560,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 
 		/**
 		 * @static
-		 * @since 1.0.0
+		 * @since  1.0.0
 		 * @access public
 		 * @return PageTemplatesDirectory
 		 */
@@ -574,7 +580,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * object therefore, we don't want the object to be cloned.
 		 *
 		 * @access public
-		 * @since 1.0.0
+		 * @since  1.0.0
 		 * @return void
 		 */
 		public function __clone() {
@@ -586,7 +592,7 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 		 * Disable unserializing of the class
 		 *
 		 * @access public
-		 * @since 1.0.0
+		 * @since  1.0.0
 		 * @return void
 		 */
 		public function __wakeup() {
