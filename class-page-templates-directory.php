@@ -336,18 +336,26 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 
 		/**
 		 * Utility method to call Elementor import routine.
+		 *
+		 * @param \WP_REST_Request $request the async request.
+		 *
+		 * @return string
 		 */
-		public function import_elementor(\WP_REST_Request $request ) {
+		public function import_elementor( \WP_REST_Request $request ) {
 			if ( ! defined( 'ELEMENTOR_VERSION' ) ) {
 				return 'no-elementor';
 			}
 
-			$params = $request->get_params();
+			$params        = $request->get_params();
 			$template_name = $params['template_name'];
-			$template_url = $params['template_url'];
+			$template_url  = $params['template_url'];
 
 			require_once( ABSPATH . 'wp-admin' . '/includes/file.php' );
 			require_once( ABSPATH . 'wp-admin' . '/includes/image.php' );
+
+			// Mime a supported document type.
+			$elementor_plugin = \Elementor\Plugin::$instance;
+			$elementor_plugin->documents->register_document_type( 'not-supported', \Elementor\Modules\Library\Documents\Page::get_class_full_name() );
 
 			$template                   = download_url( esc_url( $template_url ) );
 			$name                       = $template_name;
@@ -420,8 +428,6 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 			), admin_url( 'post.php' ) );
 
 			return ( $redirect_url );
-
-			die();
 		}
 
 		/**
