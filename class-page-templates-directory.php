@@ -259,12 +259,12 @@ if ( ! class_exists( '\ThemeIsle\PageTemplatesDirectory' ) ) {
 					'screenshot'  => esc_url( $this->get_source_url() . 'rik-elementor/screenshot.jpg' ),
 					'import_file' => esc_url( $this->get_source_url() . 'rik-elementor/template.json' ),
 				),
-				'zerif-lite'                   => array(
-					'title'       => __( 'Zerif Lite - One Page Template', 'textdomain' ),
-					'description' => __( 'A friendly one-page WordPress multipurpose theme, with a full-width image in the background and a simple white menu bar at the top. It comes with an elegant and modern design, which could fit very well any kind of business. Zerif Lite has an interactive and colorful interface, with classy parallax effect and lively animations. You can use it for your online shop as well.', 'textdomain' ),
-					'demo_url'    => 'https://demo.themeisle.com/hestia-pro-demo-content/zerif-lite/',
-					'screenshot'  => esc_url( $this->get_source_url() . 'zerif-elementor/screenshot.jpg' ),
-					'import_file' => esc_url( $this->get_source_url() . 'zerif-elementor/template.json' ),
+				'zelle-lite'                   => array(
+					'title'       => __( 'Zelle Lite - One Page Template', 'textdomain' ),
+					'description' => __( 'A friendly one-page multipurpose page, with a full-width image in the background. It comes with an elegant and modern design, which could fit very well any kind of business. Zelle Lite has an interactive and colorful interface, with classy parallax effect and lively animations. You can use it for your online shop as well.', 'textdomain' ),
+					'demo_url'    => 'https://demo.themeisle.com/hestia-pro-demo-content/zelle-lite/',
+					'screenshot'  => esc_url( $this->get_source_url() . 'zelle-lite/screenshot.jpg' ),
+					'import_file' => esc_url( $this->get_source_url() . 'zelle-lite/template.json' ),
 				),
 				'notify'                       => array(
 					'title'       => __( 'Notify - Landing Page', 'textdomain' ),
